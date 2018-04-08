@@ -11,6 +11,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.example.overscroll.HeaderFooterLayout;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -20,8 +22,10 @@ import java.util.Locale;
  */
 public class HeaderFooterFragment extends Fragment {
 
-    protected View         rootView;
-    protected RecyclerView mRecycler;
+    protected View               rootView;
+    protected RecyclerView       mRecycler;
+    protected HeaderFooterLayout mHeaderFooter;
+    private   MainAdapter        mAdapter;
 
 
     @SuppressWarnings("UnnecessaryLocalVariable")
@@ -39,7 +43,7 @@ public class HeaderFooterFragment extends Fragment {
             @Nullable ViewGroup container,
             @Nullable Bundle savedInstanceState) {
 
-        rootView = inflater.inflate(R.layout.fragment_overscroll, container, false);
+        rootView = inflater.inflate(R.layout.fragment_header_footer, container, false);
         return rootView;
     }
 
@@ -56,7 +60,80 @@ public class HeaderFooterFragment extends Fragment {
 
         mRecycler = rootView.findViewById(R.id.recycler);
         mRecycler.setLayoutManager(new LinearLayoutManager(getContext()));
-        mRecycler.setAdapter(new MainAdapter());
+        mAdapter = new MainAdapter();
+        mRecycler.setAdapter(mAdapter);
+
+        mHeaderFooter = rootView.findViewById(R.id.headerFooter);
+        mHeaderFooter.setHeader(R.layout.item_main_recycler);
+        mHeaderFooter.setFooter(R.layout.item_main_recycler);
+
+        mHeaderFooter.setOverScrollListener(new HeaderFooterLayout.OnOverScrollListener() {
+            @Override
+            public void onScrollOverTop(View header, int scrollY) {
+
+                ((TextView) header).setText(String.valueOf(scrollY));
+                if (scrollY < -200) {
+                    mHeaderFooter.stopSpringBack();
+                }
+            }
+
+
+            @Override
+            public void onOverTopTouchUp(View header, int scrollY) {
+
+                ((TextView) header).setText(" refreshing ");
+
+                if (scrollY < -200) {
+
+                    int dy = scrollY - -200;
+                    mHeaderFooter.scrollBack(-dy);
+                }
+
+                mHeaderFooter.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+
+                        mHeaderFooter.springBack();
+                    }
+                }, 3000);
+            }
+
+
+            @Override
+            public void onScrollOverBottom(View footer, int scrollY) {
+
+                ((TextView) footer).setText(String.valueOf(scrollY));
+                mHeaderFooter.stopSpringBack();
+            }
+
+
+            @Override
+            public void onOverBottomTouchUp(View footer, int scrollY) {
+
+                if (scrollY > 200) {
+                    int dy = scrollY - 200;
+                    mHeaderFooter.scrollBack(-dy);
+                }
+
+                mHeaderFooter.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+
+                        List< Integer > list = mAdapter.getList();
+
+                        final int size = list.size();
+
+                        for (int i = 0; i < 10; i++) {
+                            list.add(size + i);
+                        }
+                        mAdapter.notifyDataSetChanged();
+
+                        mHeaderFooter.reLayout();
+                    }
+                }, 3000);
+            }
+        });
+
     }
 
     //============================ recycler need ============================

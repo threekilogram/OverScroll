@@ -1,7 +1,9 @@
 package com.example.overscroll;
 
 import android.content.Context;
+import android.support.annotation.LayoutRes;
 import android.util.AttributeSet;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,13 +41,6 @@ public class HeaderFooterLayout extends OverScrollContainer {
     }
 
 
-    @Override
-    protected void init() {
-
-        super.init();
-    }
-
-
     public void setHeader(View header) {
 
         if (mHeader != null) {
@@ -56,6 +51,13 @@ public class HeaderFooterLayout extends OverScrollContainer {
     }
 
 
+    public void setHeader(@LayoutRes int headerLayoutId) {
+
+        View view = LayoutInflater.from(getContext()).inflate(headerLayoutId, this, false);
+        setHeader(view);
+    }
+
+
     public void setFooter(View footer) {
 
         if (mFooter != null) {
@@ -63,6 +65,13 @@ public class HeaderFooterLayout extends OverScrollContainer {
         }
         mFooter = footer;
         addView(footer);
+    }
+
+
+    public void setFooter(@LayoutRes int footerLayoutId) {
+
+        View view = LayoutInflater.from(getContext()).inflate(footerLayoutId, this, false);
+        setFooter(view);
     }
 
 
@@ -206,6 +215,7 @@ public class HeaderFooterLayout extends OverScrollContainer {
         int scrollY = getScrollY();
         scrollTo(0, 0);
         mRecyclerView.scrollBy(0, scrollY);
+        state = NORMAL;
     }
 
 
