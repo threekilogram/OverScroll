@@ -5,11 +5,14 @@ import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
@@ -18,6 +21,7 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivity";
     protected HeaderFooterLayout mHeaderFooterLayout;
+    private   MainAdapter        mAdapter;
 
 
     @Override
@@ -37,7 +41,8 @@ public class MainActivity extends AppCompatActivity {
         //mRecycler.setLayoutManager(new GridLayoutManager(this, 2));
         //mRecycler.setLayoutManager(new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL));
 
-        mRecycler.setAdapter(new MainAdapter());
+        mAdapter = new MainAdapter();
+        mRecycler.setAdapter(mAdapter);
         mRecycler.addOnScrollListener(new MainOnScrollListener());
 
         mHeaderFooterLayout = (HeaderFooterLayout) findViewById(R.id.recyclerWrapper);
@@ -53,6 +58,18 @@ public class MainActivity extends AppCompatActivity {
             public void onScrollOverTop(View header, int scrollY) {
 
                 ((TextView) header).setText(String.valueOf(scrollY));
+                if (scrollY < -200) {
+                    mHeaderFooterLayout.stopSpringBack();
+
+                }
+            }
+
+
+            @Override
+            public void onOverTopTouchUp(View header, int scrollY) {
+
+                int dy = scrollY - -200;
+                mHeaderFooterLayout.scrollBack(-dy);
             }
 
 
@@ -60,8 +77,36 @@ public class MainActivity extends AppCompatActivity {
             public void onScrollOverBottom(View footer, int scrollY) {
 
                 ((TextView) footer).setText(String.valueOf(scrollY));
+                mHeaderFooterLayout.stopSpringBack();
+            }
+
+
+            @Override
+            public void onOverBottomTouchUp(View footer, int scrollY) {
+
+                if (scrollY > 200) {
+                    int dy = scrollY - 200;
+                    mHeaderFooterLayout.scrollBack(-dy);
+                }
+
             }
         });
+
+        mHeaderFooterLayout.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+
+                List< Integer > list = mAdapter.getList();
+                for (int i = 0; i < 50; i++) {
+                    list.add(50 + i);
+                }
+
+                mAdapter.notifyDataSetChanged();
+                Log.i(TAG, "run:" + "notifyDataSetChanged");
+
+                mHeaderFooterLayout.reLayout();
+            }
+        }, 10000);
 
     }
 
@@ -69,6 +114,20 @@ public class MainActivity extends AppCompatActivity {
     private class MainAdapter extends RecyclerView.Adapter< MainTextHolder > {
 
         private LayoutInflater mInflater;
+
+        List< Integer > mList = new ArrayList<>();
+
+        {
+            for (int i = 0; i < 50; i++) {
+                mList.add(i);
+            }
+
+        }
+
+        public List< Integer > getList() {
+
+            return mList;
+        }
 
 
         @NonNull
@@ -87,14 +146,14 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onBindViewHolder(@NonNull MainTextHolder holder, int position) {
 
-            holder.bind(position);
+            holder.bind(mList.get(position));
         }
 
 
         @Override
         public int getItemCount() {
 
-            return 50;
+            return mList.size();
         }
     }
 
@@ -124,14 +183,6 @@ public class MainActivity extends AppCompatActivity {
         public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
 
             super.onScrolled(recyclerView, dx, dy);
-            //            int scrollExtent = recyclerView.computeVerticalScrollExtent();
-            //            Log.i(TAG, "scrollExtent:" + scrollExtent);
-            //
-            //            int scrollOffset = recyclerView.computeVerticalScrollOffset();
-            //            Log.i(TAG, "scrollOffset:" + scrollOffset);
-            //
-            //            int scrollRange = recyclerView.computeVerticalScrollRange();
-            //            Log.i(TAG, "scrollRange:" + scrollRange);
         }
     }
 }

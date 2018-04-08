@@ -33,9 +33,6 @@ public class OverScrollContainer extends ViewGroup implements NestedScrollingPar
     protected static final int SPRING_BACK = 4;
     protected              int state       = NORMAL;
 
-    protected boolean isStopSpringBack = false;
-
-
     public OverScrollContainer(Context context) {
 
         this(context, null, 0);
@@ -386,10 +383,6 @@ public class OverScrollContainer extends ViewGroup implements NestedScrollingPar
 
     protected void springBackFromTop() {
 
-        if (isStopSpringBack) {
-            return;
-        }
-
         mScroller.springBack(0, getScrollY(), 0, 0, 0, 0);
         invalidate();
         state = SPRING_BACK;
@@ -398,33 +391,11 @@ public class OverScrollContainer extends ViewGroup implements NestedScrollingPar
 
     protected void springBackFromBottom() {
 
-        if (isStopSpringBack) {
-            return;
-        }
-
         mScroller.springBack(0, getScrollY(), 0, 0, 0, 0);
         invalidate();
         state = SPRING_BACK;
     }
 
-
-    protected void stopSpringBack() {
-
-        isStopSpringBack = true;
-    }
-
-
-    protected void springBack() {
-
-        isStopSpringBack = false;
-        if (getScrollY() < 0) {
-            springBackFromTop();
-        }
-
-        if (getScrollY() > 0) {
-            springBackFromBottom();
-        }
-    }
 
     //============================layout params============================
 

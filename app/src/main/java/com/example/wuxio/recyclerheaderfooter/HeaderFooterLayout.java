@@ -2,7 +2,7 @@ package com.example.wuxio.recyclerheaderfooter;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -17,6 +17,8 @@ public class HeaderFooterLayout extends OverScrollContainer {
     protected View mFooter;
 
     private OnOverScrollListener mOverScrollListener;
+
+    private boolean isStopSpringBack = false;
 
 
     public HeaderFooterLayout(Context context) {
@@ -129,23 +131,106 @@ public class HeaderFooterLayout extends OverScrollContainer {
         }
 
         if (state == OVER_BOTTOM) {
-            mOverScrollListener.onScrollOverTop(mFooter, getScrollY());
+            mOverScrollListener.onScrollOverBottom(mFooter, getScrollY());
         }
-        Log.i(TAG, "scrollTo:" + state);
     }
 
 
-    @Override
     public void stopSpringBack() {
 
-        super.stopSpringBack();
+        isStopSpringBack = true;
     }
 
 
     @Override
+    protected void springBackFromTop() {
+
+        if (isStopSpringBack) {
+            return;
+        }
+
+        super.springBackFromTop();
+    }
+
+
+    @Override
+    protected void springBackFromBottom() {
+
+        if (isStopSpringBack) {
+            return;
+        }
+
+        super.springBackFromBottom();
+    }
+
+
     public void springBack() {
 
-        super.springBack();
+        isStopSpringBack = false;
+
+        if (getScrollY() < 0) {
+            springBackFromTop();
+        }
+
+        if (getScrollY() > 0) {
+            springBackFromBottom();
+        }
+    }
+
+
+    public void scrollBack(int dy) {
+
+        int scrollY = getScrollY();
+
+        if (scrollY < 0) {
+            if (scrollY + dy > 0) {
+                dy = -scrollY;
+                state = NORMAL;
+            }
+        }
+
+        if (scrollY > 0) {
+            if (scrollY + dy < 0) {
+                dy = -scrollY;
+                state = NORMAL;
+            }
+        }
+
+        mScroller.startScroll(0, scrollY, 0, dy);
+        invalidate();
+    }
+
+
+    public void reLayout() {
+
+        int scrollY = getScrollY();
+        scrollTo(0, 0);
+        mRecyclerView.scrollBy(0, scrollY);
+    }
+
+
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent ev) {
+
+        boolean b = super.dispatchTouchEvent(ev);
+
+        if (ev.getAction() == MotionEvent.ACTION_UP) {
+
+            if (mOverScrollListener == null) {
+                return b;
+            }
+
+            if (state == OVER_TOP) {
+                mOverScrollListener.onOverTopTouchUp(mHeader, getScrollY());
+                return b;
+            }
+
+            if (state == OVER_BOTTOM) {
+                mOverScrollListener.onOverBottomTouchUp(mFooter, getScrollY());
+            }
+        }
+
+        return b;
     }
 
     //============================layout params============================
@@ -212,7 +297,11 @@ public class HeaderFooterLayout extends OverScrollContainer {
 
         void onScrollOverTop(View header, int scrollY);
 
+        void onOverTopTouchUp(View header, int scrollY);
+
         void onScrollOverBottom(View footer, int scrollY);
+
+        void onOverBottomTouchUp(View footer, int scrollY);
 
     }
 }
