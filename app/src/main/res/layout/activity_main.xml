@@ -6,7 +6,7 @@
         android:layout_height="match_parent"
         tools:context=".MainActivity">
 
-    <com.example.wuxio.recyclerheaderfooter.HeaderFooterLayout
+    <com.example.overscroll.HeaderFooterLayout
             android:id="@+id/recyclerWrapper"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
@@ -17,7 +17,7 @@
                 android:layout_height="match_parent"
                 android:overScrollMode="never"/>
 
-    </com.example.wuxio.recyclerheaderfooter.HeaderFooterLayout>
+    </com.example.overscroll.HeaderFooterLayout>
 
 
 </FrameLayout>
