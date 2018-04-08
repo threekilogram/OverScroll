@@ -5,7 +5,6 @@ import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,6 +17,7 @@ public class MainActivity extends AppCompatActivity {
     protected RecyclerView mRecycler;
 
     private static final String TAG = "MainActivity";
+    protected HeaderFooterLayout mHeaderFooterLayout;
 
 
     @Override
@@ -33,19 +33,36 @@ public class MainActivity extends AppCompatActivity {
 
         mRecycler = findViewById(R.id.recycler);
         mRecycler.setLayoutManager(new LinearLayoutManager(this));
+
         //mRecycler.setLayoutManager(new GridLayoutManager(this, 2));
         //mRecycler.setLayoutManager(new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL));
+
         mRecycler.setAdapter(new MainAdapter());
         mRecycler.addOnScrollListener(new MainOnScrollListener());
 
-        mRecycler.post(new Runnable() {
+        mHeaderFooterLayout = (HeaderFooterLayout) findViewById(R.id.recyclerWrapper);
+        LayoutInflater inflater = getLayoutInflater();
+        TextView header = (TextView) inflater.inflate(R.layout.item_main_recycler, mHeaderFooterLayout,
+                false);
+        mHeaderFooterLayout.setHeader(header);
+        TextView footer = (TextView) inflater.inflate(R.layout.item_main_recycler, mHeaderFooterLayout,
+                false);
+        mHeaderFooterLayout.setFooter(footer);
+        mHeaderFooterLayout.setOverScrollListener(new HeaderFooterLayout.OnOverScrollListener() {
             @Override
-            public void run() {
+            public void onScrollOverTop(View header, int scrollY) {
 
-                int height = mRecycler.getHeight();
-                Log.i(TAG, "recycler Height:" + height);
+                ((TextView) header).setText(String.valueOf(scrollY));
+            }
+
+
+            @Override
+            public void onScrollOverBottom(View footer, int scrollY) {
+
+                ((TextView) footer).setText(String.valueOf(scrollY));
             }
         });
+
     }
 
 
