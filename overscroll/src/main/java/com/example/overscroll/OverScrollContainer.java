@@ -10,6 +10,14 @@ import android.view.ViewGroup;
 import android.widget.OverScroller;
 
 /**
+ * 为 recycler view 增加overScroll 功能,当recyclerView滑动到顶部,可以继续下拉,下拉有阻尼效果,
+ * 当当recyclerView滑动到底部,可以继续上拉,上拉有阻尼效果,支持recycler fling, fling 到顶部/底部时,会继续fling
+ *
+ * {@link #setOverScrollDistance(int)} 设置OverScroll 距离
+ * {@link #setFlingOverScrollDistance(int)} 设置 fling 的 OverScroll 距离
+ *
+ * 只能包含一个 recycler 子view
+ *
  * @author wuxio 2018-04-08:6:28
  */
 public class OverScrollContainer extends ViewGroup implements NestedScrollingParent {
@@ -17,21 +25,68 @@ public class OverScrollContainer extends ViewGroup implements NestedScrollingPar
     private static final String TAG = "OverScrollContainer";
 
     protected RecyclerView mRecyclerView;
+
+    /**
+     * 用于fling ,回弹
+     */
     protected OverScroller mScroller;
 
+    /**
+     * {@link RecyclerView#computeVerticalScrollExtent()}
+     */
     protected int mScrollExtent;
+
+    /**
+     * {@link RecyclerView#computeVerticalScrollOffset()}
+     */
     protected int mScrollOffset;
+
+    /**
+     * {@link RecyclerView#computeVerticalScrollRange()}
+     */
     protected int mScrollRange;
 
-    protected int mOverScrollDistance      = 500;
+    /**
+     * 发生滑动时最大的 overScroll 距离
+     */
+    protected int mOverScrollDistance = 500;
+
+    /**
+     * fling 时最大 overScroll 距离
+     */
     protected int mFlingOverScrollDistance = 500;
 
-    protected static final int NORMAL      = 0;
-    protected static final int OVER_TOP    = 1;
+
+    /**
+     * recycler 可以滑动
+     */
+    protected static final int NORMAL = 0;
+
+    /**
+     * recycler滑动到顶部了,继续下拉的状态
+     */
+    protected static final int OVER_TOP = 1;
+
+    /**
+     * recycler滑动到底部了,继续上拉的状态
+     */
     protected static final int OVER_BOTTOM = 2;
-    protected static final int FLING       = 3;
+
+    /**
+     * 正在 fling
+     */
+    protected static final int FLING = 3;
+
+    /**
+     * 手指抬起后正在回弹
+     */
     protected static final int SPRING_BACK = 4;
-    protected              int state       = NORMAL;
+
+    /**
+     * 当前状态标记
+     */
+    protected int state = NORMAL;
+
 
     public OverScrollContainer(Context context) {
 
@@ -59,6 +114,8 @@ public class OverScrollContainer extends ViewGroup implements NestedScrollingPar
 
 
     /**
+     * 设置最大 over scroll 距离
+     *
      * @param overScrollDistance touch overScroll distance
      */
     public void setOverScrollDistance(int overScrollDistance) {
@@ -68,6 +125,8 @@ public class OverScrollContainer extends ViewGroup implements NestedScrollingPar
 
 
     /**
+     * 设置最大 fling over 距离
+     *
      * @param flingOverScrollDistance fling touch overScroll distance
      */
     public void setFlingOverScrollDistance(int flingOverScrollDistance) {
@@ -123,6 +182,8 @@ public class OverScrollContainer extends ViewGroup implements NestedScrollingPar
 
 
     /**
+     * 如果{@link #mScroller}正在运行,停止他
+     *
      * abort scroller
      */
     protected void finishScrollerIfNotFinish() {
@@ -174,6 +235,14 @@ public class OverScrollContainer extends ViewGroup implements NestedScrollingPar
     }
 
 
+    /**
+     * 当recycler滑动到顶部,继续向下滑动的话,开始overScroll
+     *
+     * @param scrollY  当前
+     * @param dy       新的滑动距离
+     * @param consumed 输出
+     * @return true:{@link #onNestedPreScroll(View, int, int, int[])}将返回,不再执行后面的代码
+     */
     protected boolean showOverTop(int scrollY, int dy, int[] consumed) {
 
         if (mScrollOffset == 0 && dy < 0) {
@@ -188,6 +257,14 @@ public class OverScrollContainer extends ViewGroup implements NestedScrollingPar
     }
 
 
+    /**
+     * 当 top 已经发生overScroll时,向上滑动,将top的overScroll向上移回
+     *
+     * @param scrollY  当前
+     * @param dy       新的滑动距离
+     * @param consumed 输出
+     * @return true:{@link #onNestedPreScroll(View, int, int, int[])}将返回,不再执行后面的代码
+     */
     protected boolean hideOverTop(int scrollY, int dy, int[] consumed) {
 
         if (scrollY < 0 && dy > 0) {
@@ -206,6 +283,14 @@ public class OverScrollContainer extends ViewGroup implements NestedScrollingPar
     }
 
 
+    /**
+     * 当recycler滑动到底部,继续向上滑动的话,开始overScroll
+     *
+     * @param scrollY  当前
+     * @param dy       新的滑动距离
+     * @param consumed 输出
+     * @return true:{@link #onNestedPreScroll(View, int, int, int[])}将返回,不再执行后面的代码
+     */
     protected boolean showOverBottom(int scrollY, int dy, int[] consumed) {
 
         if (mScrollOffset + mScrollExtent == mScrollRange && dy > 0) {
@@ -219,6 +304,14 @@ public class OverScrollContainer extends ViewGroup implements NestedScrollingPar
     }
 
 
+    /**
+     * 当 bottom 已经发生overScroll时,向下滑动,将bottom的overScroll向下移回
+     *
+     * @param scrollY  当前
+     * @param dy       新的滑动距离
+     * @param consumed 输出
+     * @return true:{@link #onNestedPreScroll(View, int, int, int[])}将返回,不再执行后面的代码
+     */
     protected boolean hideOverBottom(int scrollY, int dy, int[] consumed) {
 
         if (scrollY > 0 && dy < 0) {
@@ -381,6 +474,9 @@ public class OverScrollContainer extends ViewGroup implements NestedScrollingPar
     }
 
 
+    /**
+     * 手指抬起后,回弹到原点
+     */
     protected void springBackFromTop() {
 
         mScroller.springBack(0, getScrollY(), 0, 0, 0, 0);
@@ -389,13 +485,15 @@ public class OverScrollContainer extends ViewGroup implements NestedScrollingPar
     }
 
 
+    /**
+     * 手指抬起后,回弹到原点
+     */
     protected void springBackFromBottom() {
 
         mScroller.springBack(0, getScrollY(), 0, 0, 0, 0);
         invalidate();
         state = SPRING_BACK;
     }
-
 
     //============================layout params============================
 
@@ -449,6 +547,9 @@ public class OverScrollContainer extends ViewGroup implements NestedScrollingPar
 
     //============================ 滚动监听 ============================
 
+    /**
+     * 监听recycler 是否已经滚动到顶部/底部,如果 recycler 在fling中到达边界,触发{@link OverScrollContainer} fling效果
+     */
     protected class ContainerOnScrollListener extends RecyclerView.OnScrollListener {
 
         @Override
@@ -459,7 +560,6 @@ public class OverScrollContainer extends ViewGroup implements NestedScrollingPar
             mScrollRange = recyclerView.computeVerticalScrollRange();
 
             /* begin fling */
-
             /* only recycler fling to edge,  container begin fling*/
 
             if (mScrollOffset == 0) {
