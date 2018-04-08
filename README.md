@@ -6,6 +6,21 @@
 * 使用 NestedScrollingParent 接口实现,实现简单,性能很好
 * 扩展号好,使用布局包裹 recyclerView就可实现功能
 
+## 依赖
+
+```
+allprojects {
+repositories {
+	maven { url 'https://jitpack.io' }
+	}
+}
+```
+```
+dependencies {
+	compile 'com.github.threekilogram:OverScrollLayout:1.0'
+}
+```
+
 ## OverScrollContainer
 
 用于给recyclerView增加overScroll效果
