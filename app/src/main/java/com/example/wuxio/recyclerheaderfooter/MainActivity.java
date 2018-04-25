@@ -34,7 +34,8 @@ public class MainActivity extends AppCompatActivity {
 
         Fragment[] mFragments = {
                 ShowFragment.newInstance(),
-                HeaderFooterFragment.newInstance()
+                HeaderFooterFragment.newInstance(),
+                HeaderFooterFragmentV2.newInstance()
         };
 
 

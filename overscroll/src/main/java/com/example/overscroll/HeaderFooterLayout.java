@@ -3,6 +3,7 @@ package com.example.overscroll;
 import android.content.Context;
 import android.support.annotation.LayoutRes;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -187,9 +188,9 @@ public class HeaderFooterLayout extends OverScrollContainer {
 
 
     /**
-     * 调用之后,发生overScroll后,手指抬起不会回弹,使用{@link #springBack()}回弹到原点
+     * 调用之后,发生overScroll后,手指抬起不会回弹,使用{@link #scrollBack()}回弹到原点
      */
-    public void stopSpringBack() {
+    public void stopScrollBack() {
 
         isStopSpringBack = true;
     }
@@ -226,7 +227,7 @@ public class HeaderFooterLayout extends OverScrollContainer {
     /**
      * 回弹到原点
      */
-    public void springBack() {
+    public void scrollBack() {
 
         isStopSpringBack = false;
 
@@ -250,16 +251,26 @@ public class HeaderFooterLayout extends OverScrollContainer {
         /* 修正距离过大/过小,不要超过overScrollDistance */
 
         if (scrollY < 0) {
+
+            /* over top */
+
             if (scrollY + dy > 0) {
                 dy = -scrollY;
                 state = NORMAL;
+            } else {
+                state = SCROLL_BACK;
             }
         }
 
         if (scrollY > 0) {
+
+            /* over bottom */
+
             if (scrollY + dy < 0) {
                 dy = -scrollY;
                 state = NORMAL;
+            } else {
+                state = SCROLL_BACK;
             }
         }
 
@@ -289,16 +300,18 @@ public class HeaderFooterLayout extends OverScrollContainer {
 
         if (ev.getAction() == MotionEvent.ACTION_UP) {
 
+            Log.i(TAG, "dispatchTouchEvent:" + "up: " + " " + state);
+
             if (mOverScrollListener == null) {
                 return b;
             }
 
-            if (state == OVER_TOP) {
+            if (getScrollY() < 0) {
                 mOverScrollListener.onOverTopTouchUp(mHeader, getScrollY());
                 return b;
             }
 
-            if (state == OVER_BOTTOM) {
+            if (getScrollY() > 0) {
                 mOverScrollListener.onOverBottomTouchUp(mFooter, getScrollY());
             }
         }
@@ -312,7 +325,10 @@ public class HeaderFooterLayout extends OverScrollContainer {
     @Override
     protected ViewGroup.LayoutParams generateDefaultLayoutParams() {
 
-        return new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        return new LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT
+        );
     }
 
 

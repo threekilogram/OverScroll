@@ -27,27 +27,27 @@ public class OverScrollContainer extends ViewGroup implements NestedScrollingPar
     protected RecyclerView mRecyclerView;
 
     /**
-     * 用于fling ,回弹
+     * 用于fling ,OverScroll之后回滚
      */
     protected OverScroller mScroller;
 
     /**
-     * {@link RecyclerView#computeVerticalScrollExtent()}
+     * 记录{@link RecyclerView#computeVerticalScrollExtent()}距离
      */
     protected int mScrollExtent;
 
     /**
-     * {@link RecyclerView#computeVerticalScrollOffset()}
+     * 记录{@link RecyclerView#computeVerticalScrollOffset()}距离
      */
     protected int mScrollOffset;
 
     /**
-     * {@link RecyclerView#computeVerticalScrollRange()}
+     * 记录{@link RecyclerView#computeVerticalScrollRange()}距离
      */
     protected int mScrollRange;
 
     /**
-     * 发生滑动时最大的 overScroll 距离
+     * 最大的 overScroll 距离
      */
     protected int mOverScrollDistance = 500;
 
@@ -56,9 +56,8 @@ public class OverScrollContainer extends ViewGroup implements NestedScrollingPar
      */
     protected int mFlingOverScrollDistance = 500;
 
-
     /**
-     * recycler 可以滑动
+     * recycler 滑动
      */
     protected static final int NORMAL = 0;
 
@@ -80,7 +79,7 @@ public class OverScrollContainer extends ViewGroup implements NestedScrollingPar
     /**
      * 手指抬起后正在回弹
      */
-    protected static final int SPRING_BACK = 4;
+    protected static final int SCROLL_BACK = 4;
 
     /**
      * 当前状态标记
@@ -212,25 +211,25 @@ public class OverScrollContainer extends ViewGroup implements NestedScrollingPar
 
         /* scroll to top , go on scroll min to -mOverScrollDistance */
 
-        if (showOverTop(scrollY, dy, consumed)) {
+        if (overTopScroll(scrollY, dy, consumed)) {
             return;
         }
 
         /* top still have shown, scroll to hide  */
 
-        if (hideOverTop(scrollY, dy, consumed)) {
+        if (overTopScrollBack(scrollY, dy, consumed)) {
             return;
         }
 
         /* scroll to bottom , go on scroll, max to mOverScrollDistance*/
 
-        if (showOverBottom(scrollY, dy, consumed)) {
+        if (overBottomScroll(scrollY, dy, consumed)) {
             return;
         }
 
         /* bottom still have shown, scroll to hide  */
 
-        hideOverBottom(scrollY, dy, consumed);
+        overBottomScrollBack(scrollY, dy, consumed);
 
     }
 
@@ -243,7 +242,7 @@ public class OverScrollContainer extends ViewGroup implements NestedScrollingPar
      * @param consumed 输出
      * @return true:{@link #onNestedPreScroll(View, int, int, int[])}将返回,不再执行后面的代码
      */
-    protected boolean showOverTop(int scrollY, int dy, int[] consumed) {
+    protected boolean overTopScroll(int scrollY, int dy, int[] consumed) {
 
         if (mScrollOffset == 0 && dy < 0) {
             state = OVER_TOP;
@@ -265,7 +264,7 @@ public class OverScrollContainer extends ViewGroup implements NestedScrollingPar
      * @param consumed 输出
      * @return true:{@link #onNestedPreScroll(View, int, int, int[])}将返回,不再执行后面的代码
      */
-    protected boolean hideOverTop(int scrollY, int dy, int[] consumed) {
+    protected boolean overTopScrollBack(int scrollY, int dy, int[] consumed) {
 
         if (scrollY < 0 && dy > 0) {
 
@@ -291,7 +290,7 @@ public class OverScrollContainer extends ViewGroup implements NestedScrollingPar
      * @param consumed 输出
      * @return true:{@link #onNestedPreScroll(View, int, int, int[])}将返回,不再执行后面的代码
      */
-    protected boolean showOverBottom(int scrollY, int dy, int[] consumed) {
+    protected boolean overBottomScroll(int scrollY, int dy, int[] consumed) {
 
         if (mScrollOffset + mScrollExtent == mScrollRange && dy > 0) {
             state = OVER_BOTTOM;
@@ -312,7 +311,7 @@ public class OverScrollContainer extends ViewGroup implements NestedScrollingPar
      * @param consumed 输出
      * @return true:{@link #onNestedPreScroll(View, int, int, int[])}将返回,不再执行后面的代码
      */
-    protected boolean hideOverBottom(int scrollY, int dy, int[] consumed) {
+    protected boolean overBottomScrollBack(int scrollY, int dy, int[] consumed) {
 
         if (scrollY > 0 && dy < 0) {
 
@@ -401,7 +400,7 @@ public class OverScrollContainer extends ViewGroup implements NestedScrollingPar
     @Override
     public boolean onNestedFling(View target, float velocityX, float velocityY, boolean consumed) {
 
-        boolean fling = super.onNestedFling(target, velocityX, velocityY, consumed);
+        boolean result = super.onNestedFling(target, velocityX, velocityY, consumed);
 
         finishScrollerIfNotFinish();
 
@@ -428,7 +427,7 @@ public class OverScrollContainer extends ViewGroup implements NestedScrollingPar
         /* only when recycler can scroll to top or bottom , begin invalidate(), fling start */
         /* no invalidate() there , invalidate() when recycler fling to edge */
 
-        return fling;
+        return result;
     }
 
 
@@ -442,7 +441,7 @@ public class OverScrollContainer extends ViewGroup implements NestedScrollingPar
             return;
         }
 
-        if (state == SPRING_BACK) {
+        if (state == SCROLL_BACK) {
             state = NORMAL;
         }
 
@@ -479,9 +478,9 @@ public class OverScrollContainer extends ViewGroup implements NestedScrollingPar
      */
     protected void springBackFromTop() {
 
+        state = SCROLL_BACK;
         mScroller.springBack(0, getScrollY(), 0, 0, 0, 0);
         invalidate();
-        state = SPRING_BACK;
     }
 
 
@@ -490,9 +489,9 @@ public class OverScrollContainer extends ViewGroup implements NestedScrollingPar
      */
     protected void springBackFromBottom() {
 
+        state = SCROLL_BACK;
         mScroller.springBack(0, getScrollY(), 0, 0, 0, 0);
         invalidate();
-        state = SPRING_BACK;
     }
 
     //============================layout params============================

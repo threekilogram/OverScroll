@@ -21,9 +21,9 @@ import java.util.Locale;
 /**
  * @author wuxio 2018-04-08:13:12
  */
-public class HeaderFooterFragment extends Fragment {
+public class HeaderFooterFragmentV2 extends Fragment {
 
-    private static final String TAG = "HeaderFooterFragment";
+    private static final String TAG = "HeaderFooterFragmentV2";
 
     protected View               rootView;
     protected RecyclerView       mRecycler;
@@ -32,9 +32,9 @@ public class HeaderFooterFragment extends Fragment {
 
 
     @SuppressWarnings("UnnecessaryLocalVariable")
-    public static HeaderFooterFragment newInstance() {
+    public static HeaderFooterFragmentV2 newInstance() {
 
-        HeaderFooterFragment fragment = new HeaderFooterFragment();
+        HeaderFooterFragmentV2 fragment = new HeaderFooterFragmentV2();
         return fragment;
     }
 
@@ -74,45 +74,24 @@ public class HeaderFooterFragment extends Fragment {
             @Override
             public void onScrollOverTop(View header, int scrollY) {
 
-                Log.i(TAG, "onScrollOverTop:" + "");
-
                 ((TextView) header).setText(String.valueOf(scrollY));
-                if (scrollY < -200) {
-                    mHeaderFooter.stopScrollBack();
-                }
+                Log.i(TAG, "onScrollOverTop:" + "");
             }
 
 
             @Override
             public void onOverTopTouchUp(View header, int scrollY) {
 
-                Log.i(TAG, "onOverTopTouchUp:" + "");
-
                 ((TextView) header).setText(" refreshing ");
-
-                if (scrollY < -200) {
-
-                    int dy = scrollY - -200;
-                    mHeaderFooter.scrollBack(-dy);
-                }
-
-                mHeaderFooter.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-
-                        mHeaderFooter.scrollBack();
-                    }
-                }, 3000);
+                Log.i(TAG, "onOverTopTouchUp:" + "");
             }
 
 
             @Override
             public void onScrollOverBottom(View footer, int scrollY) {
 
-                Log.i(TAG, "onScrollOverBottom:" + "");
-
                 ((TextView) footer).setText(String.valueOf(scrollY));
-                mHeaderFooter.stopScrollBack();
+                Log.i(TAG, "onScrollOverBottom:" + "");
             }
 
 
@@ -120,34 +99,6 @@ public class HeaderFooterFragment extends Fragment {
             public void onOverBottomTouchUp(View footer, int scrollY) {
 
                 Log.i(TAG, "onOverBottomTouchUp:" + "");
-
-                if (scrollY < 200) {
-                    mHeaderFooter.scrollBack();
-                    return;
-                }
-
-                if (scrollY > 200) {
-                    int dy = scrollY - 200;
-                    mHeaderFooter.scrollBack(-dy);
-                    ((TextView) footer).setText(" refreshing ");
-                }
-
-                mHeaderFooter.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-
-                        List< Integer > list = mAdapter.getList();
-
-                        final int size = list.size();
-
-                        for (int i = 0; i < 10; i++) {
-                            list.add(size + i);
-                        }
-                        mAdapter.notifyDataSetChanged();
-
-                        mHeaderFooter.reLayout();
-                    }
-                }, 3000);
             }
         });
 
