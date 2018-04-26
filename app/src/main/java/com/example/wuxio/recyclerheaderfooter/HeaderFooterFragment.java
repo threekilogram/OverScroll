@@ -6,7 +6,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,8 +21,6 @@ import java.util.Locale;
  * @author wuxio 2018-04-08:13:12
  */
 public class HeaderFooterFragment extends Fragment {
-
-    private static final String TAG = "HeaderFooterFragment";
 
     protected View               rootView;
     protected RecyclerView       mRecycler;
@@ -74,8 +71,6 @@ public class HeaderFooterFragment extends Fragment {
             @Override
             public void onScrollOverTop(View header, int scrollY) {
 
-                Log.i(TAG, "onScrollOverTop:" + "");
-
                 ((TextView) header).setText(String.valueOf(scrollY));
                 if (scrollY < -200) {
                     mHeaderFooter.stopScrollBack();
@@ -85,8 +80,6 @@ public class HeaderFooterFragment extends Fragment {
 
             @Override
             public void onOverTopTouchUp(View header, int scrollY) {
-
-                Log.i(TAG, "onOverTopTouchUp:" + "");
 
                 ((TextView) header).setText(" refreshing ");
 
@@ -109,8 +102,6 @@ public class HeaderFooterFragment extends Fragment {
             @Override
             public void onScrollOverBottom(View footer, int scrollY) {
 
-                Log.i(TAG, "onScrollOverBottom:" + "");
-
                 ((TextView) footer).setText(String.valueOf(scrollY));
                 mHeaderFooter.stopScrollBack();
             }
@@ -118,8 +109,6 @@ public class HeaderFooterFragment extends Fragment {
 
             @Override
             public void onOverBottomTouchUp(View footer, int scrollY) {
-
-                Log.i(TAG, "onOverBottomTouchUp:" + "");
 
                 if (scrollY < 200) {
                     mHeaderFooter.scrollBack();

@@ -2,10 +2,12 @@ package com.example.overscroll;
 
 import android.content.Context;
 import android.support.v4.widget.NestedScrollView;
+import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.ViewGroup;
 
 import com.example.overscroll.listener.OnScrollListener;
+import com.example.overscroll.listener.RecyclerScrollListener;
 
 /**
  * 为 recycler view 增加overScroll 功能,当recyclerView滑动到顶部,可以继续下拉,下拉有阻尼效果,
@@ -18,22 +20,22 @@ import com.example.overscroll.listener.OnScrollListener;
  *
  * @author wuxio 2018-04-08:6:28
  */
-public class OverScrollNested extends OverScrollContainer< NestedScrollView > {
+public class OverScrollLayout extends OverScrollContainer {
 
 
-    public OverScrollNested(Context context) {
+    public OverScrollLayout(Context context) {
 
         super(context);
     }
 
 
-    public OverScrollNested(Context context, AttributeSet attrs) {
+    public OverScrollLayout(Context context, AttributeSet attrs) {
 
         super(context, attrs);
     }
 
 
-    public OverScrollNested(Context context, AttributeSet attrs, int defStyleAttr) {
+    public OverScrollLayout(Context context, AttributeSet attrs, int defStyleAttr) {
 
         super(context, attrs, defStyleAttr);
     }
@@ -44,7 +46,13 @@ public class OverScrollNested extends OverScrollContainer< NestedScrollView > {
     @Override
     public void addScrollListener() {
 
-        mChild.setOnScrollChangeListener(new OnScrollListener(this));
+        if (mChild instanceof RecyclerView) {
+            ((RecyclerView) mChild).addOnScrollListener(new RecyclerScrollListener(this));
+        }
+        if (mChild instanceof NestedScrollView) {
+
+            ((NestedScrollView) mChild).setOnScrollChangeListener(new OnScrollListener(this));
+        }
     }
 
     //============================layout params============================

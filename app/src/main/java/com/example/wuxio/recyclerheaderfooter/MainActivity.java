@@ -36,7 +36,8 @@ public class MainActivity extends AppCompatActivity {
                 ShowFragment.newInstance(),
                 HeaderFooterFragment.newInstance(),
                 HeaderFooterFragmentV2.newInstance(),
-                NestedFragment.newInstance()
+                NestedFragment.newInstance(),
+                NestedHeaderFooterFragment.newInstance()
         };
 
 

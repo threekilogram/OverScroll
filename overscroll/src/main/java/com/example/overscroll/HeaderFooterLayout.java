@@ -60,6 +60,7 @@ public class HeaderFooterLayout extends OverScrollContainer {
 
     //============================ implements method ============================
 
+
     @Override
     public void addScrollListener() {
 
@@ -78,21 +79,6 @@ public class HeaderFooterLayout extends OverScrollContainer {
     /**
      * 设置 header View
      *
-     * @param header view
-     */
-    public void setHeader(View header) {
-
-        if (mHeader != null) {
-            removeView(mHeader);
-        }
-        mHeader = header;
-        addView(header);
-    }
-
-
-    /**
-     * 设置 header View
-     *
      * @param headerLayoutId 布局ID
      */
     public void setHeader(@LayoutRes int headerLayoutId) {
@@ -103,17 +89,28 @@ public class HeaderFooterLayout extends OverScrollContainer {
 
 
     /**
-     * 设置 footer View
+     * 设置 header View
      *
-     * @param footer view
+     * @param header view
      */
-    public void setFooter(View footer) {
+    public void setHeader(View header) {
 
-        if (mFooter != null) {
-            removeView(mFooter);
+        setHeader(header, generateWrapHeightLayoutParams());
+    }
+
+
+    /**
+     * 设置 header View
+     *
+     * @param header view
+     */
+    public void setHeader(View header, LayoutParams params) {
+
+        if (mHeader != null) {
+            removeView(mHeader);
         }
-        mFooter = footer;
-        addView(footer);
+        mHeader = header;
+        addView(header, 0, params);
     }
 
 
@@ -126,6 +123,32 @@ public class HeaderFooterLayout extends OverScrollContainer {
 
         View view = LayoutInflater.from(getContext()).inflate(footerLayoutId, this, false);
         setFooter(view);
+    }
+
+
+    /**
+     * 设置 footer View
+     *
+     * @param footer view
+     */
+    public void setFooter(View footer) {
+
+        setFooter(footer, generateWrapHeightLayoutParams());
+    }
+
+
+    /**
+     * 设置 footer View
+     *
+     * @param footer view
+     */
+    public void setFooter(View footer, LayoutParams params) {
+
+        if (mFooter != null) {
+            removeView(mFooter);
+        }
+        mFooter = footer;
+        addView(footer, params);
     }
 
     //============================ 布局 ============================
@@ -339,7 +362,7 @@ public class HeaderFooterLayout extends OverScrollContainer {
 
 
     @Override
-    protected ViewGroup.LayoutParams generateDefaultLayoutParams() {
+    protected LayoutParams generateDefaultLayoutParams() {
 
         return new LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
@@ -348,15 +371,24 @@ public class HeaderFooterLayout extends OverScrollContainer {
     }
 
 
+    protected LayoutParams generateWrapHeightLayoutParams() {
+
+        return new LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+        );
+    }
+
+
     @Override
-    protected ViewGroup.LayoutParams generateLayoutParams(ViewGroup.LayoutParams p) {
+    protected LayoutParams generateLayoutParams(ViewGroup.LayoutParams p) {
 
         return new LayoutParams(p);
     }
 
 
     @Override
-    public ViewGroup.LayoutParams generateLayoutParams(AttributeSet attrs) {
+    public LayoutParams generateLayoutParams(AttributeSet attrs) {
 
         return new LayoutParams(getContext(), attrs);
     }

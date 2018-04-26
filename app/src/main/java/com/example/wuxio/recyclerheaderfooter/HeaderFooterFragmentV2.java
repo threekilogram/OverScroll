@@ -6,7 +6,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,8 +21,6 @@ import java.util.Locale;
  * @author wuxio 2018-04-08:13:12
  */
 public class HeaderFooterFragmentV2 extends Fragment {
-
-    private static final String TAG = "HeaderFooterFragmentV2";
 
     protected View               rootView;
     protected RecyclerView       mRecycler;
@@ -75,7 +72,6 @@ public class HeaderFooterFragmentV2 extends Fragment {
             public void onScrollOverTop(View header, int scrollY) {
 
                 ((TextView) header).setText(String.valueOf(scrollY));
-                Log.i(TAG, "onScrollOverTop:" + "");
             }
 
 
@@ -83,7 +79,6 @@ public class HeaderFooterFragmentV2 extends Fragment {
             public void onOverTopTouchUp(View header, int scrollY) {
 
                 ((TextView) header).setText(" refreshing ");
-                Log.i(TAG, "onOverTopTouchUp:" + "");
             }
 
 
@@ -91,14 +86,12 @@ public class HeaderFooterFragmentV2 extends Fragment {
             public void onScrollOverBottom(View footer, int scrollY) {
 
                 ((TextView) footer).setText(String.valueOf(scrollY));
-                Log.i(TAG, "onScrollOverBottom:" + "");
             }
 
 
             @Override
             public void onOverBottomTouchUp(View footer, int scrollY) {
 
-                Log.i(TAG, "onOverBottomTouchUp:" + "");
             }
         });
 
