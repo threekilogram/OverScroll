@@ -1,7 +1,9 @@
 package com.example.overscroll;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.support.v4.view.NestedScrollingParent;
+import android.support.v4.view.ScrollingView;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
@@ -20,37 +22,32 @@ import android.widget.OverScroller;
  *
  * @author wuxio 2018-04-08:6:28
  */
-public class OverScrollContainer extends ViewGroup implements NestedScrollingParent {
+public abstract class OverScrollContainer < V extends ViewGroup >
+        extends ViewGroup
+        implements NestedScrollingParent {
 
-    private static final String TAG = "OverScrollContainer";
-
-    protected RecyclerView mRecyclerView;
+    protected V mChild;
 
     /**
      * 用于fling ,OverScroll之后回滚
      */
     protected OverScroller mScroller;
-
     /**
      * 记录{@link RecyclerView#computeVerticalScrollExtent()}距离
      */
-    protected int mScrollExtent;
-
+    protected int          mScrollExtent;
     /**
      * 记录{@link RecyclerView#computeVerticalScrollOffset()}距离
      */
-    protected int mScrollOffset;
-
+    protected int          mScrollOffset;
     /**
      * 记录{@link RecyclerView#computeVerticalScrollRange()}距离
      */
-    protected int mScrollRange;
-
+    protected int          mScrollRange;
     /**
      * 最大的 overScroll 距离
      */
-    protected int mOverScrollDistance = 500;
-
+    protected int mOverScrollDistance      = 500;
     /**
      * fling 时最大 overScroll 距离
      */
@@ -59,32 +56,27 @@ public class OverScrollContainer extends ViewGroup implements NestedScrollingPar
     /**
      * recycler 滑动
      */
-    protected static final int NORMAL = 0;
-
+    protected static final int NORMAL      = 0;
     /**
      * recycler滑动到顶部了,继续下拉的状态
      */
-    protected static final int OVER_TOP = 1;
-
+    protected static final int OVER_TOP    = 1;
     /**
      * recycler滑动到底部了,继续上拉的状态
      */
     protected static final int OVER_BOTTOM = 2;
-
     /**
      * 正在 fling
      */
-    protected static final int FLING = 3;
-
+    protected static final int FLING       = 3;
     /**
      * 手指抬起后正在回弹
      */
     protected static final int SCROLL_BACK = 4;
-
     /**
      * 当前状态标记
      */
-    protected int state = NORMAL;
+    protected              int state       = NORMAL;
 
 
     public OverScrollContainer(Context context) {
@@ -138,21 +130,35 @@ public class OverScrollContainer extends ViewGroup implements NestedScrollingPar
     protected void onFinishInflate() {
 
         super.onFinishInflate();
-        mRecyclerView = (RecyclerView) getChildAt(0);
-        mRecyclerView.addOnScrollListener(new ContainerOnScrollListener());
+        initChild();
+        addScrollListener();
     }
+
+
+    @SuppressWarnings("unchecked")
+    public void initChild() {
+
+        mChild = (V) getChildAt(0);
+    }
+
+
+    /**
+     * 为布局中的子view添加滚动监听,该监听必须在子view滑动时回调{@link #observeScroll(ScrollingView)},
+     * 或者完成{@link #observeScroll(ScrollingView)}相同的操作
+     */
+    public abstract void addScrollListener();
 
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
 
-        measureChildWithMargins(mRecyclerView,
+        measureChildWithMargins(mChild,
                 widthMeasureSpec, getPaddingLeft() + getPaddingRight(),
                 heightMeasureSpec, getPaddingTop() + getPaddingBottom()
         );
 
-        int measuredWidth = mRecyclerView.getMeasuredWidth();
-        int measuredHeight = mRecyclerView.getMeasuredHeight();
+        int measuredWidth = mChild.getMeasuredWidth();
+        int measuredHeight = mChild.getMeasuredHeight();
 
         setMeasuredDimension(
                 measuredWidth + getPaddingLeft() + getPaddingRight(),
@@ -164,14 +170,14 @@ public class OverScrollContainer extends ViewGroup implements NestedScrollingPar
     @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
 
-        LayoutParams params = ((LayoutParams) mRecyclerView.getLayoutParams());
+        LayoutParams params = ((LayoutParams) mChild.getLayoutParams());
 
         int left = getPaddingLeft() + params.leftMargin;
         int top = getPaddingTop() + params.topMargin;
-        int right = left + mRecyclerView.getMeasuredWidth();
-        int bottom = top + mRecyclerView.getMeasuredHeight();
+        int right = left + mChild.getMeasuredWidth();
+        int bottom = top + mChild.getMeasuredHeight();
 
-        mRecyclerView.layout(
+        mChild.layout(
                 left,
                 top,
                 right,
@@ -196,7 +202,7 @@ public class OverScrollContainer extends ViewGroup implements NestedScrollingPar
     @Override
     public boolean onStartNestedScroll(View child, View target, int nestedScrollAxes) {
 
-        return child == mRecyclerView;
+        return child == mChild;
     }
 
 
@@ -398,7 +404,7 @@ public class OverScrollContainer extends ViewGroup implements NestedScrollingPar
 
 
     @Override
-    public boolean onNestedFling(View target, float velocityX, float velocityY, boolean consumed) {
+    public boolean onNestedFling(@NonNull View target, float velocityX, float velocityY, boolean consumed) {
 
         boolean result = super.onNestedFling(target, velocityX, velocityY, consumed);
 
@@ -434,6 +440,10 @@ public class OverScrollContainer extends ViewGroup implements NestedScrollingPar
     @Override
     public void computeScroll() {
 
+        if (state == NORMAL) {
+            return;
+        }
+
         if (mScroller.computeScrollOffset()) {
             int y = mScroller.getCurrY();
             scrollTo(0, y);
@@ -441,11 +451,9 @@ public class OverScrollContainer extends ViewGroup implements NestedScrollingPar
             return;
         }
 
-        if (state == SCROLL_BACK) {
-            state = NORMAL;
-        }
+        /* 之前都是 return 能执行到这,说明是invalidate调用了, computeScrollOffset结束了,需要更改状态标记*/
 
-        if (state == FLING) {
+        if (state == SCROLL_BACK || state == FLING) {
             state = NORMAL;
         }
     }
@@ -457,6 +465,10 @@ public class OverScrollContainer extends ViewGroup implements NestedScrollingPar
         boolean event = super.dispatchTouchEvent(ev);
 
         int action = ev.getAction();
+
+        if (action == MotionEvent.ACTION_DOWN) {
+            finishScrollerIfNotFinish();
+        }
 
         if (action == MotionEvent.ACTION_UP) {
 
@@ -546,34 +558,28 @@ public class OverScrollContainer extends ViewGroup implements NestedScrollingPar
 
     //============================ 滚动监听 ============================
 
-    /**
-     * 监听recycler 是否已经滚动到顶部/底部,如果 recycler 在fling中到达边界,触发{@link OverScrollContainer} fling效果
-     */
-    protected class ContainerOnScrollListener extends RecyclerView.OnScrollListener {
 
-        @Override
-        public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+    public < T extends ScrollingView > void observeScroll(T t) {
 
-            mScrollExtent = recyclerView.computeVerticalScrollExtent();
-            mScrollOffset = mRecyclerView.computeVerticalScrollOffset();
-            mScrollRange = recyclerView.computeVerticalScrollRange();
+        mScrollExtent = t.computeVerticalScrollExtent();
+        mScrollOffset = t.computeVerticalScrollOffset();
+        mScrollRange = t.computeVerticalScrollRange();
 
-            /* begin fling */
-            /* only recycler fling to edge,  container begin fling*/
+        /* begin fling */
+        /* only recycler fling to edge,  container begin fling*/
 
-            if (mScrollOffset == 0) {
-                if (!mScroller.isFinished()) {
-                    invalidate();
-                    state = FLING;
-                    return;
-                }
+        if (mScrollOffset == 0) {
+            if (!mScroller.isFinished()) {
+                state = FLING;
+                invalidate();
+                return;
             }
+        }
 
-            if (mScrollOffset + mScrollExtent == mScrollRange) {
-                if (!mScroller.isFinished()) {
-                    invalidate();
-                    state = FLING;
-                }
+        if (mScrollOffset + mScrollExtent == mScrollRange) {
+            if (!mScroller.isFinished()) {
+                state = FLING;
+                invalidate();
             }
         }
     }

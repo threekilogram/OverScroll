@@ -2,12 +2,16 @@ package com.example.overscroll;
 
 import android.content.Context;
 import android.support.annotation.LayoutRes;
+import android.support.v4.widget.NestedScrollView;
+import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+
+import com.example.overscroll.listener.OnScrollListener;
+import com.example.overscroll.listener.RecyclerScrollListener;
 
 /**
  * 为 recyclerView 添加头布局/底布局
@@ -15,8 +19,6 @@ import android.view.ViewGroup;
  * @author wuxio 2018-04-07:19:03
  */
 public class HeaderFooterLayout extends OverScrollContainer {
-
-    private static final String TAG = "HeaderFooterLayout";
 
     /**
      * 头布局
@@ -55,6 +57,22 @@ public class HeaderFooterLayout extends OverScrollContainer {
 
         super(context, attrs, defStyleAttr);
     }
+
+    //============================ implements method ============================
+
+    @Override
+    public void addScrollListener() {
+
+        if (mChild instanceof RecyclerView) {
+            ((RecyclerView) mChild).addOnScrollListener(new RecyclerScrollListener(this));
+            return;
+        }
+        if (mChild instanceof NestedScrollView) {
+            ((NestedScrollView) mChild).setOnScrollChangeListener(new OnScrollListener(this));
+        }
+    }
+
+    //============================ 设置 header footer ============================
 
 
     /**
@@ -109,6 +127,8 @@ public class HeaderFooterLayout extends OverScrollContainer {
         View view = LayoutInflater.from(getContext()).inflate(footerLayoutId, this, false);
         setFooter(view);
     }
+
+    //============================ 布局 ============================
 
 
     @Override
@@ -165,6 +185,8 @@ public class HeaderFooterLayout extends OverScrollContainer {
         }
     }
 
+    //============================ 控制滑动 ============================
+
 
     @Override
     public void scrollTo(int x, int y) {
@@ -184,15 +206,6 @@ public class HeaderFooterLayout extends OverScrollContainer {
         if (state == OVER_BOTTOM) {
             mOverScrollListener.onScrollOverBottom(mFooter, getScrollY());
         }
-    }
-
-
-    /**
-     * 调用之后,发生overScroll后,手指抬起不会回弹,使用{@link #scrollBack()}回弹到原点
-     */
-    public void stopScrollBack() {
-
-        isStopSpringBack = true;
     }
 
 
@@ -221,6 +234,15 @@ public class HeaderFooterLayout extends OverScrollContainer {
         }
 
         super.springBackFromBottom();
+    }
+
+
+    /**
+     * 调用之后,发生overScroll后,手指抬起不会回弹,使用{@link #scrollBack()}回弹到原点
+     */
+    public void stopScrollBack() {
+
+        isStopSpringBack = true;
     }
 
 
@@ -256,10 +278,8 @@ public class HeaderFooterLayout extends OverScrollContainer {
 
             if (scrollY + dy > 0) {
                 dy = -scrollY;
-                state = NORMAL;
-            } else {
-                state = SCROLL_BACK;
             }
+            state = SCROLL_BACK;
         }
 
         if (scrollY > 0) {
@@ -268,10 +288,8 @@ public class HeaderFooterLayout extends OverScrollContainer {
 
             if (scrollY + dy < 0) {
                 dy = -scrollY;
-                state = NORMAL;
-            } else {
-                state = SCROLL_BACK;
             }
+            state = SCROLL_BACK;
         }
 
         mScroller.startScroll(0, scrollY, 0, dy);
@@ -286,7 +304,7 @@ public class HeaderFooterLayout extends OverScrollContainer {
 
         int scrollY = getScrollY();
         scrollTo(0, 0);
-        mRecyclerView.scrollBy(0, scrollY);
+        mChild.scrollBy(0, scrollY);
         state = NORMAL;
     }
 
@@ -299,8 +317,6 @@ public class HeaderFooterLayout extends OverScrollContainer {
         /* 回调监听,通知overScroll 结束 */
 
         if (ev.getAction() == MotionEvent.ACTION_UP) {
-
-            Log.i(TAG, "dispatchTouchEvent:" + "up: " + " " + state);
 
             if (mOverScrollListener == null) {
                 return b;
