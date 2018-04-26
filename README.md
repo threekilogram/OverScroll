@@ -16,7 +16,7 @@ repositories {
 ```
 ```
 dependencies {
-	compile 'com.github.threekilogram:OverScrollLayout:1.0'
+	compile 'com.github.threekilogram:OverScrollLayout:1.1'
 }
 ```
 
