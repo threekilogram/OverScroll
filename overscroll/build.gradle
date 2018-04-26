@@ -15,9 +15,7 @@ android {
 
     }
 
-    buildTypes {
 
-    }
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8

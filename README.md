@@ -1,10 +1,9 @@
 
 ## 简介
 
-该项目用于为 RecyclerView 提供 overScroll 效果和 添加 Header/Footer 布局
+该项目用于为 View 提供 overScroll 效果和 添加 Header/Footer 布局
 
 * 使用 NestedScrollingParent 接口实现,实现简单,性能很好
-* 扩展号好,使用布局包裹 recyclerView就可实现功能
 
 ## 依赖
 
