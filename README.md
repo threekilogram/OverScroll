@@ -21,13 +21,13 @@ dependencies {
 }
 ```
 
-## OverScrollContainer
+## OverScrollLayout
 
-用于给recyclerView增加overScroll效果
+用于给View增加overScroll效果
 
 * 支持 overScroll
 * 自带阻尼效果
-* 支持 recycler fling到边界布局继续未完成的fling
+* 支持fling到边界布局继续未完成的fling
 
 ### 阻尼
 
@@ -39,7 +39,7 @@ dependencies {
 
 ## HeaderFooterLayout
 
-用于给recyclerView增加header footer,不必修改adapter和LayoutManger,直接包裹住 recyclerView,设置Header 和 Footer就行,因为该布局扩展自 `OverScrollContainer` 支持所有overScroll的特性
+用于给View增加header footer,直接包裹住View,设置Header 和 Footer就行,因为该布局扩展自 `OverScrollContainer` 支持所有overScroll的特性
 
 * 自定义Header footer
 	* 理论上支持任何view
@@ -161,6 +161,3 @@ public void onOverBottomTouchUp(View footer, int scrollY) {
 
 ![](/img/pic04.gif)
 
-## TODO
-
-* 为所有布局增加overScroll headerFooter
