@@ -1,9 +1,7 @@
 
 ## 简介
 
-该项目用于为 View 提供 overScroll 效果和 添加 Header/Footer 布局
-
-* 使用 NestedScrollingParent 接口实现,实现简单,性能很好
+该项目用于为 View 提供一层皮肤,即:在view外层嵌套一层特殊功能的view
 
 ## 依赖
 
