@@ -1,7 +1,7 @@
 
 ## 简介
 
-该项目用于为 View 提供一层皮肤,即:在view外层嵌套一层特殊功能的view
+该项目用于为 View 提供一层皮肤,改皮肤可以为view增加 overScroll ,header/footer 布局
 
 ## 依赖
 
