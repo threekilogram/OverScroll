@@ -10,7 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-
+import com.example.overscroll.OverScrollLayout;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -20,110 +20,103 @@ import java.util.Locale;
  */
 public class ShowFragment extends Fragment {
 
-    protected View         rootView;
-    protected RecyclerView mRecycler;
+      protected View             rootView;
+      protected RecyclerView     mRecycler;
+      protected OverScrollLayout mOverScrollLayout;
 
+      @SuppressWarnings("UnnecessaryLocalVariable")
+      public static ShowFragment newInstance () {
 
-    @SuppressWarnings("UnnecessaryLocalVariable")
-    public static ShowFragment newInstance() {
+            ShowFragment fragment = new ShowFragment();
+            return fragment;
+      }
 
-        ShowFragment fragment = new ShowFragment();
-        return fragment;
-    }
+      @Nullable
+      @Override
+      public View onCreateView (
+          @NonNull LayoutInflater inflater,
+          @Nullable ViewGroup container,
+          @Nullable Bundle savedInstanceState) {
 
+            rootView = inflater.inflate(R.layout.fragment_overscroll, container, false);
+            return rootView;
+      }
 
-    @Nullable
-    @Override
-    public View onCreateView(
-            @NonNull LayoutInflater inflater,
-            @Nullable ViewGroup container,
-            @Nullable Bundle savedInstanceState) {
+      @Override
+      public void onViewCreated (@NonNull View view, @Nullable Bundle savedInstanceState) {
 
-        rootView = inflater.inflate(R.layout.fragment_overscroll, container, false);
-        return rootView;
-    }
+            super.onViewCreated(view, savedInstanceState);
+            initView(view);
+      }
 
+      private void initView (View rootView) {
 
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+            mRecycler = rootView.findViewById(R.id.recycler);
+            mRecycler.setLayoutManager(new LinearLayoutManager(getContext()));
+            mRecycler.setAdapter(new MainAdapter());
 
-        super.onViewCreated(view, savedInstanceState);
-        initView(view);
-    }
+            mOverScrollLayout = rootView.findViewById(R.id.overScroll);
+            mOverScrollLayout.setOverScrollDistance(200);
+      }
 
+      //============================ recycler need ============================
 
-    private void initView(View rootView) {
+      private class MainAdapter extends RecyclerView.Adapter<MainTextHolder> {
 
-        mRecycler = rootView.findViewById(R.id.recycler);
-        mRecycler.setLayoutManager(new LinearLayoutManager(getContext()));
-        mRecycler.setAdapter(new MainAdapter());
-    }
+            private LayoutInflater mInflater;
 
-    //============================ recycler need ============================
+            List<Integer> mList = new ArrayList<>();
 
-    private class MainAdapter extends RecyclerView.Adapter< MainTextHolder > {
-
-        private LayoutInflater mInflater;
-
-        List< Integer > mList = new ArrayList<>();
-
-        {
-            for (int i = 0; i < 50; i++) {
-                mList.add(i);
+            {
+                  for(int i = 0; i < 50; i++) {
+                        mList.add(i);
+                  }
             }
 
-        }
+            public List<Integer> getList () {
 
-        public List< Integer > getList() {
-
-            return mList;
-        }
-
-
-        @NonNull
-        @Override
-        public MainTextHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-
-            if (mInflater == null) {
-                mInflater = LayoutInflater.from(parent.getContext());
+                  return mList;
             }
 
-            View view = mInflater.inflate(R.layout.item_main_recycler, parent, false);
-            return new MainTextHolder(view);
-        }
+            @NonNull
+            @Override
+            public MainTextHolder onCreateViewHolder (@NonNull ViewGroup parent, int viewType) {
 
+                  if(mInflater == null) {
+                        mInflater = LayoutInflater.from(parent.getContext());
+                  }
 
-        @Override
-        public void onBindViewHolder(@NonNull MainTextHolder holder, int position) {
+                  View view = mInflater.inflate(R.layout.item_main_recycler, parent, false);
+                  return new MainTextHolder(view);
+            }
 
-            holder.bind(mList.get(position));
-        }
+            @Override
+            public void onBindViewHolder (@NonNull MainTextHolder holder, int position) {
 
+                  holder.bind(mList.get(position));
+            }
 
-        @Override
-        public int getItemCount() {
+            @Override
+            public int getItemCount () {
 
-            return mList.size();
-        }
-    }
+                  return mList.size();
+            }
+      }
 
-    private class MainTextHolder extends RecyclerView.ViewHolder {
+      private class MainTextHolder extends RecyclerView.ViewHolder {
 
+            private final TextView mTextView;
 
-        private final TextView mTextView;
+            public MainTextHolder (View itemView) {
 
+                  super(itemView);
+                  mTextView = (TextView) itemView;
+            }
 
-        public MainTextHolder(View itemView) {
+            public void bind (int position) {
 
-            super(itemView);
-            mTextView = (TextView) itemView;
-        }
-
-
-        public void bind(int position) {
-
-            String s = String.format(Locale.CHINA, "Item %d", position);
-            mTextView.setText(s);
-        }
-    }
+                  String s = String.format(Locale.CHINA, "Item %d", position);
+                  mTextView.setText(s);
+            }
+      }
 }
