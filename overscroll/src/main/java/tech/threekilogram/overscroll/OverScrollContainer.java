@@ -1,4 +1,4 @@
-package com.example.overscroll;
+package tech.threekilogram.overscroll;
 
 import android.content.Context;
 import android.support.annotation.IntRange;

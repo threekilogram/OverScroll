@@ -10,10 +10,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import com.example.overscroll.OverScrollLayout;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import tech.threekilogram.overscroll.OverScrollLayout;
 
 /**
  * @author wuxio 2018-04-08:13:12

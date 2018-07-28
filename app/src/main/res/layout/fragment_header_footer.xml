@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.example.overscroll.HeaderFooterLayout
+<tech.threekilogram.overscroll.HeaderFooterLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/headerFooter"
@@ -13,4 +13,4 @@
             android:overScrollMode="never"
             />
 
-</com.example.overscroll.HeaderFooterLayout>
+</tech.threekilogram.overscroll.HeaderFooterLayout>

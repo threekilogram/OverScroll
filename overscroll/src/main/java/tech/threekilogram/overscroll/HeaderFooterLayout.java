@@ -1,4 +1,4 @@
-package com.example.overscroll;
+package tech.threekilogram.overscroll;
 
 import android.content.Context;
 import android.support.annotation.LayoutRes;
@@ -9,8 +9,8 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import com.example.overscroll.listener.OnScrollListener;
-import com.example.overscroll.listener.RecyclerScrollListener;
+import tech.threekilogram.overscroll.listener.OnScrollListener;
+import tech.threekilogram.overscroll.listener.RecyclerScrollListener;
 
 /**
  * 为 recyclerView 添加头布局/底布局
