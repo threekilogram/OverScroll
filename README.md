@@ -16,11 +16,9 @@ repositories {
 ```
 ```
 dependencies {
-	compile 'com.github.threekilogram:OverScrollLayout:${version}'
+	compile 'com.github.threekilogram:OverScrollLayout:1.2.4'
 }
 ```
-
-[version 版本号在这里](https://github.com/threekilogram/OverScroll/releases)
 
 ## OverScrollLayout
 
