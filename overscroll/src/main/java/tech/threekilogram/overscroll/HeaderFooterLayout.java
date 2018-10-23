@@ -39,32 +39,34 @@ public class HeaderFooterLayout extends OverScrollContainer {
        */
       private boolean isStopSpringBack = false;
 
-      public HeaderFooterLayout (Context context) {
+      public HeaderFooterLayout ( Context context ) {
 
-            this(context, null, 0);
+            this( context, null, 0 );
       }
 
-      public HeaderFooterLayout (Context context, AttributeSet attrs) {
+      public HeaderFooterLayout ( Context context, AttributeSet attrs ) {
 
-            this(context, attrs, 0);
+            this( context, attrs, 0 );
       }
 
-      public HeaderFooterLayout (Context context, AttributeSet attrs, int defStyleAttr) {
+      public HeaderFooterLayout ( Context context, AttributeSet attrs, int defStyleAttr ) {
 
-            super(context, attrs, defStyleAttr);
+            super( context, attrs, defStyleAttr );
       }
 
       //============================ implements method ============================
 
       @Override
-      public void addScrollListener () {
+      public void addScrollListener ( ) {
 
-            if(mChild instanceof RecyclerView) {
-                  ((RecyclerView) mChild).addOnScrollListener(new RecyclerScrollListener(this));
+            if( mChild instanceof RecyclerView ) {
+                  ( (RecyclerView) mChild )
+                      .addOnScrollListener( new RecyclerScrollListener( this ) );
                   return;
             }
-            if(mChild instanceof NestedScrollView) {
-                  ((NestedScrollView) mChild).setOnScrollChangeListener(new OnScrollListener(this));
+            if( mChild instanceof NestedScrollView ) {
+                  ( (NestedScrollView) mChild )
+                      .setOnScrollChangeListener( new OnScrollListener( this ) );
             }
       }
 
@@ -75,10 +77,10 @@ public class HeaderFooterLayout extends OverScrollContainer {
        *
        * @param headerLayoutId 布局ID
        */
-      public void setHeader (@LayoutRes int headerLayoutId) {
+      public void setHeader ( @LayoutRes int headerLayoutId ) {
 
-            View view = LayoutInflater.from(getContext()).inflate(headerLayoutId, this, false);
-            setHeader(view);
+            View view = LayoutInflater.from( getContext() ).inflate( headerLayoutId, this, false );
+            setHeader( view );
       }
 
       /**
@@ -86,9 +88,9 @@ public class HeaderFooterLayout extends OverScrollContainer {
        *
        * @param header view
        */
-      public void setHeader (View header) {
+      public void setHeader ( View header ) {
 
-            setHeader(header, generateWrapHeightLayoutParams());
+            setHeader( header, generateWrapHeightLayoutParams() );
       }
 
       /**
@@ -96,13 +98,13 @@ public class HeaderFooterLayout extends OverScrollContainer {
        *
        * @param header view
        */
-      public void setHeader (View header, LayoutParams params) {
+      public void setHeader ( View header, LayoutParams params ) {
 
-            if(mHeader != null) {
-                  removeView(mHeader);
+            if( mHeader != null ) {
+                  removeView( mHeader );
             }
             mHeader = header;
-            addView(header, 0, params);
+            addView( header, 0, params );
       }
 
       /**
@@ -110,10 +112,10 @@ public class HeaderFooterLayout extends OverScrollContainer {
        *
        * @param footerLayoutId 布局ID
        */
-      public void setFooter (@LayoutRes int footerLayoutId) {
+      public void setFooter ( @LayoutRes int footerLayoutId ) {
 
-            View view = LayoutInflater.from(getContext()).inflate(footerLayoutId, this, false);
-            setFooter(view);
+            View view = LayoutInflater.from( getContext() ).inflate( footerLayoutId, this, false );
+            setFooter( view );
       }
 
       /**
@@ -121,9 +123,9 @@ public class HeaderFooterLayout extends OverScrollContainer {
        *
        * @param footer view
        */
-      public void setFooter (View footer) {
+      public void setFooter ( View footer ) {
 
-            setFooter(footer, generateWrapHeightLayoutParams());
+            setFooter( footer, generateWrapHeightLayoutParams() );
       }
 
       /**
@@ -131,23 +133,23 @@ public class HeaderFooterLayout extends OverScrollContainer {
        *
        * @param footer view
        */
-      public void setFooter (View footer, LayoutParams params) {
+      public void setFooter ( View footer, LayoutParams params ) {
 
-            if(mFooter != null) {
-                  removeView(mFooter);
+            if( mFooter != null ) {
+                  removeView( mFooter );
             }
             mFooter = footer;
-            addView(footer, params);
+            addView( footer, params );
       }
 
       //============================ 布局 ============================
 
       @Override
-      protected void onMeasure (int widthMeasureSpec, int heightMeasureSpec) {
+      protected void onMeasure ( int widthMeasureSpec, int heightMeasureSpec ) {
 
-            super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+            super.onMeasure( widthMeasureSpec, heightMeasureSpec );
 
-            if(mHeader != null) {
+            if( mHeader != null ) {
                   measureChildWithMargins(
                       mHeader,
                       widthMeasureSpec, getPaddingLeft() + getPaddingRight(),
@@ -155,7 +157,7 @@ public class HeaderFooterLayout extends OverScrollContainer {
                   );
             }
 
-            if(mFooter != null) {
+            if( mFooter != null ) {
                   measureChildWithMargins(
                       mFooter,
                       widthMeasureSpec, getPaddingLeft() + getPaddingRight(),
@@ -165,13 +167,13 @@ public class HeaderFooterLayout extends OverScrollContainer {
       }
 
       @Override
-      protected void onLayout (boolean changed, int l, int t, int r, int b) {
+      protected void onLayout ( boolean changed, int l, int t, int r, int b ) {
 
-            super.onLayout(changed, l, t, r, b);
+            super.onLayout( changed, l, t, r, b );
 
             /* 布局header到 recyclerView 上边 */
 
-            if(mHeader != null) {
+            if( mHeader != null ) {
 
                   LayoutParams params = (LayoutParams) mHeader.getLayoutParams();
                   int left = getPaddingLeft() + params.leftMargin;
@@ -179,41 +181,41 @@ public class HeaderFooterLayout extends OverScrollContainer {
                   int right = left + mHeader.getMeasuredWidth();
                   int bottom = top + mHeader.getMeasuredHeight();
 
-                  mHeader.layout(left, top, right, bottom);
+                  mHeader.layout( left, top, right, bottom );
             }
 
             /* 布局footer到 recyclerView 下边 */
 
-            if(mFooter != null) {
+            if( mFooter != null ) {
                   LayoutParams params = (LayoutParams) mFooter.getLayoutParams();
                   int left = getPaddingLeft() + params.leftMargin;
                   int top = getHeight() + params.topMargin;
                   int right = left + mFooter.getMeasuredWidth();
                   int bottom = top + mFooter.getMeasuredHeight();
 
-                  mFooter.layout(left, top, right, bottom);
+                  mFooter.layout( left, top, right, bottom );
             }
       }
 
       //============================ 控制滑动 ============================
 
       @Override
-      public void scrollTo (int x, int y) {
+      public void scrollTo ( int x, int y ) {
 
-            super.scrollTo(x, y);
+            super.scrollTo( x, y );
 
             /* 根据当前状态回调监听 */
 
-            if(mOverScrollListener == null) {
+            if( mOverScrollListener == null ) {
                   return;
             }
 
-            if(state == OVER_TOP) {
-                  mOverScrollListener.onScrollOverTop(mHeader, getScrollY());
+            if( state == OVER_TOP ) {
+                  mOverScrollListener.onScrollOverTop( mHeader, getScrollY() );
             }
 
-            if(state == OVER_BOTTOM) {
-                  mOverScrollListener.onScrollOverBottom(mFooter, getScrollY());
+            if( state == OVER_BOTTOM ) {
+                  mOverScrollListener.onScrollOverBottom( mFooter, getScrollY() );
             }
       }
 
@@ -221,9 +223,9 @@ public class HeaderFooterLayout extends OverScrollContainer {
        * 根据{@link #isStopSpringBack}控制回弹
        */
       @Override
-      protected void springBackFromTop () {
+      protected void springBackFromTop ( ) {
 
-            if(isStopSpringBack) {
+            if( isStopSpringBack ) {
                   return;
             }
 
@@ -234,9 +236,9 @@ public class HeaderFooterLayout extends OverScrollContainer {
        * 根据{@link #isStopSpringBack}控制回弹
        */
       @Override
-      protected void springBackFromBottom () {
+      protected void springBackFromBottom ( ) {
 
-            if(isStopSpringBack) {
+            if( isStopSpringBack ) {
                   return;
             }
 
@@ -246,7 +248,7 @@ public class HeaderFooterLayout extends OverScrollContainer {
       /**
        * 调用之后,发生overScroll后,手指抬起不会回弹,使用{@link #scrollBack()}回弹到原点
        */
-      public void stopScrollBack () {
+      public void stopScrollBack ( ) {
 
             isStopSpringBack = true;
       }
@@ -254,15 +256,15 @@ public class HeaderFooterLayout extends OverScrollContainer {
       /**
        * 回弹到原点
        */
-      public void scrollBack () {
+      public void scrollBack ( ) {
 
             isStopSpringBack = false;
 
-            if(getScrollY() < 0) {
+            if( getScrollY() < 0 ) {
                   springBackFromTop();
             }
 
-            if(getScrollY() > 0) {
+            if( getScrollY() > 0 ) {
                   springBackFromBottom();
             }
       }
@@ -270,67 +272,67 @@ public class HeaderFooterLayout extends OverScrollContainer {
       /**
        * 处于 overScroll 状态时,调用该方法回弹一小段距离
        */
-      public void scrollBack (int dy) {
+      public void scrollBack ( int dy ) {
 
             int scrollY = getScrollY();
 
             /* 修正距离过大/过小,不要超过overScrollDistance */
 
-            if(scrollY < 0) {
+            if( scrollY < 0 ) {
 
                   /* over top */
 
-                  if(scrollY + dy > 0) {
+                  if( scrollY + dy > 0 ) {
                         dy = -scrollY;
                   }
                   state = SCROLL_BACK;
             }
 
-            if(scrollY > 0) {
+            if( scrollY > 0 ) {
 
                   /* over bottom */
 
-                  if(scrollY + dy < 0) {
+                  if( scrollY + dy < 0 ) {
                         dy = -scrollY;
                   }
                   state = SCROLL_BACK;
             }
 
-            mScroller.startScroll(0, scrollY, 0, dy);
+            mScroller.startScroll( 0, scrollY, 0, dy );
             invalidate();
       }
 
       /**
        * 当recyclerView添加新的数据时,调用该方法,将header和footer重新放置到原始位置
        */
-      public void reLayout () {
+      public void reLayout ( ) {
 
             int scrollY = getScrollY();
-            scrollTo(0, 0);
-            mChild.scrollBy(0, scrollY);
+            scrollTo( 0, 0 );
+            mChild.scrollBy( 0, scrollY );
             state = NORMAL;
       }
 
       @Override
-      public boolean dispatchTouchEvent (MotionEvent ev) {
+      public boolean dispatchTouchEvent ( MotionEvent ev ) {
 
-            boolean b = super.dispatchTouchEvent(ev);
+            boolean b = super.dispatchTouchEvent( ev );
 
             /* 回调监听,通知overScroll 结束 */
 
-            if(ev.getAction() == MotionEvent.ACTION_UP) {
+            if( ev.getAction() == MotionEvent.ACTION_UP ) {
 
-                  if(mOverScrollListener == null) {
+                  if( mOverScrollListener == null ) {
                         return b;
                   }
 
-                  if(getScrollY() < 0) {
-                        mOverScrollListener.onOverTopTouchUp(mHeader, getScrollY());
+                  if( getScrollY() < 0 ) {
+                        mOverScrollListener.onOverTopTouchUp( mHeader, getScrollY() );
                         return b;
                   }
 
-                  if(getScrollY() > 0) {
-                        mOverScrollListener.onOverBottomTouchUp(mFooter, getScrollY());
+                  if( getScrollY() > 0 ) {
+                        mOverScrollListener.onOverBottomTouchUp( mFooter, getScrollY() );
                   }
             }
 
@@ -340,7 +342,7 @@ public class HeaderFooterLayout extends OverScrollContainer {
       //============================layout params============================
 
       @Override
-      protected LayoutParams generateDefaultLayoutParams () {
+      protected LayoutParams generateDefaultLayoutParams ( ) {
 
             return new LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
@@ -348,7 +350,7 @@ public class HeaderFooterLayout extends OverScrollContainer {
             );
       }
 
-      protected LayoutParams generateWrapHeightLayoutParams () {
+      protected LayoutParams generateWrapHeightLayoutParams ( ) {
 
             return new LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
@@ -357,43 +359,43 @@ public class HeaderFooterLayout extends OverScrollContainer {
       }
 
       @Override
-      protected LayoutParams generateLayoutParams (ViewGroup.LayoutParams p) {
+      protected LayoutParams generateLayoutParams ( ViewGroup.LayoutParams p ) {
 
-            return new LayoutParams(p);
+            return new LayoutParams( p );
       }
 
       @Override
-      public LayoutParams generateLayoutParams (AttributeSet attrs) {
+      public LayoutParams generateLayoutParams ( AttributeSet attrs ) {
 
-            return new LayoutParams(getContext(), attrs);
+            return new LayoutParams( getContext(), attrs );
       }
 
       public static class LayoutParams extends OverScrollContainer.LayoutParams {
 
-            public LayoutParams (Context c, AttributeSet attrs) {
+            public LayoutParams ( Context c, AttributeSet attrs ) {
 
-                  super(c, attrs);
+                  super( c, attrs );
             }
 
-            public LayoutParams (int width, int height) {
+            public LayoutParams ( int width, int height ) {
 
-                  super(width, height);
+                  super( width, height );
             }
 
-            public LayoutParams (MarginLayoutParams source) {
+            public LayoutParams ( MarginLayoutParams source ) {
 
-                  super(source);
+                  super( source );
             }
 
-            public LayoutParams (ViewGroup.LayoutParams source) {
+            public LayoutParams ( ViewGroup.LayoutParams source ) {
 
-                  super(source);
+                  super( source );
             }
       }
 
       //============================OverScrollListener============================
 
-      public void setOverScrollListener (OnOverScrollListener overScrollListener) {
+      public void setOverScrollListener ( OnOverScrollListener overScrollListener ) {
 
             mOverScrollListener = overScrollListener;
       }
@@ -409,7 +411,7 @@ public class HeaderFooterLayout extends OverScrollContainer {
              * @param header header view
              * @param scrollY 当前scrollY
              */
-            void onScrollOverTop (View header, int scrollY);
+            void onScrollOverTop ( View header, int scrollY );
 
             /**
              * 当发生top overScroll后,手指抬起后回调
@@ -417,7 +419,7 @@ public class HeaderFooterLayout extends OverScrollContainer {
              * @param header header view
              * @param scrollY 当前scrollY
              */
-            void onOverTopTouchUp (View header, int scrollY);
+            void onOverTopTouchUp ( View header, int scrollY );
 
             /**
              * 当发生bottom overScroll时,回调
@@ -425,7 +427,7 @@ public class HeaderFooterLayout extends OverScrollContainer {
              * @param footer footer view
              * @param scrollY 当前scrollY
              */
-            void onScrollOverBottom (View footer, int scrollY);
+            void onScrollOverBottom ( View footer, int scrollY );
 
             /**
              * 当发生bottom overScroll后,手指抬起后回调
@@ -433,6 +435,6 @@ public class HeaderFooterLayout extends OverScrollContainer {
              * @param footer footer view
              * @param scrollY 当前scrollY
              */
-            void onOverBottomTouchUp (View footer, int scrollY);
+            void onOverBottomTouchUp ( View footer, int scrollY );
       }
 }

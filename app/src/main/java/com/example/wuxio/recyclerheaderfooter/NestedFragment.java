@@ -70,7 +70,7 @@ public class NestedFragment extends Fragment {
         TextView textView = new TextView(getContext());
         textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 24);
         textView.setGravity(Gravity.CENTER);
-        textView.setText(String.format(Locale.CHINA, "Item %d", i));
+        textView.setText(String.format(Locale.CHINA, "linear Item %d", i));
         return textView;
     }
 

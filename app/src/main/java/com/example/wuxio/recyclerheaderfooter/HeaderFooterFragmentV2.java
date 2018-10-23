@@ -144,7 +144,7 @@ public class HeaderFooterFragmentV2 extends Fragment {
 
             public void bind (int position) {
 
-                  String s = String.format(Locale.CHINA, "Item %d", position);
+                  String s = String.format(Locale.CHINA, "recycler Item %d", position);
                   mTextView.setText(s);
             }
       }

@@ -21,76 +21,79 @@ import tech.threekilogram.overscroll.listener.RecyclerScrollListener;
  */
 public class OverScrollLayout extends OverScrollContainer {
 
-      public OverScrollLayout (Context context) {
+      public OverScrollLayout ( Context context ) {
 
-            super(context);
+            super( context );
       }
 
-      public OverScrollLayout (Context context, AttributeSet attrs) {
+      public OverScrollLayout ( Context context, AttributeSet attrs ) {
 
-            super(context, attrs);
+            super( context, attrs );
       }
 
-      public OverScrollLayout (Context context, AttributeSet attrs, int defStyleAttr) {
+      public OverScrollLayout ( Context context, AttributeSet attrs, int defStyleAttr ) {
 
-            super(context, attrs, defStyleAttr);
+            super( context, attrs, defStyleAttr );
       }
 
       //============================ implements method ============================
 
       @Override
-      public void addScrollListener () {
+      public void addScrollListener ( ) {
 
-            if(mChild instanceof RecyclerView) {
-                  ((RecyclerView) mChild).addOnScrollListener(new RecyclerScrollListener(this));
+            if( mChild instanceof RecyclerView ) {
+                  ( (RecyclerView) mChild )
+                      .addOnScrollListener( new RecyclerScrollListener( this ) );
+                  return;
             }
-            if(mChild instanceof NestedScrollView) {
+            if( mChild instanceof NestedScrollView ) {
 
-                  ((NestedScrollView) mChild).setOnScrollChangeListener(new OnScrollListener(this));
+                  ( (NestedScrollView) mChild )
+                      .setOnScrollChangeListener( new OnScrollListener( this ) );
             }
       }
 
       //============================layout params============================
 
       @Override
-      protected ViewGroup.LayoutParams generateDefaultLayoutParams () {
+      protected ViewGroup.LayoutParams generateDefaultLayoutParams ( ) {
 
             return new LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT );
       }
 
       @Override
-      protected ViewGroup.LayoutParams generateLayoutParams (ViewGroup.LayoutParams p) {
+      protected ViewGroup.LayoutParams generateLayoutParams ( ViewGroup.LayoutParams p ) {
 
-            return new LayoutParams(p);
+            return new LayoutParams( p );
       }
 
       @Override
-      public ViewGroup.LayoutParams generateLayoutParams (AttributeSet attrs) {
+      public ViewGroup.LayoutParams generateLayoutParams ( AttributeSet attrs ) {
 
-            return new LayoutParams(getContext(), attrs);
+            return new LayoutParams( getContext(), attrs );
       }
 
       public static class LayoutParams extends OverScrollContainer.LayoutParams {
 
-            public LayoutParams (Context c, AttributeSet attrs) {
+            public LayoutParams ( Context c, AttributeSet attrs ) {
 
-                  super(c, attrs);
+                  super( c, attrs );
             }
 
-            public LayoutParams (int width, int height) {
+            public LayoutParams ( int width, int height ) {
 
-                  super(width, height);
+                  super( width, height );
             }
 
-            public LayoutParams (MarginLayoutParams source) {
+            public LayoutParams ( MarginLayoutParams source ) {
 
-                  super(source);
+                  super( source );
             }
 
-            public LayoutParams (ViewGroup.LayoutParams source) {
+            public LayoutParams ( ViewGroup.LayoutParams source ) {
 
-                  super(source);
+                  super( source );
             }
       }
 }

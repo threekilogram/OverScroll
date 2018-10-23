@@ -10,7 +10,7 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.AccelerateInterpolator;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.OverScroller;
 import com.example.engine.TimeEngine;
 
@@ -50,11 +50,11 @@ public abstract class OverScrollContainer<V extends ViewGroup>
       /**
        * 最大的 overScroll 距离
        */
-      protected int mOverScrollDistance      = 400;
+      protected int mOverScrollDistance      = 300;
       /**
        * fling 时最大 overScroll 距离
        */
-      protected int mFlingOverScrollDistance = 400;
+      protected int mFlingOverScrollDistance = 300;
 
       /**
        * recycler 滑动
@@ -101,26 +101,26 @@ public abstract class OverScrollContainer<V extends ViewGroup>
        */
       protected boolean    mIsEngineRunning;
 
-      public OverScrollContainer (Context context) {
+      public OverScrollContainer ( Context context ) {
 
-            this(context, null, 0);
+            this( context, null, 0 );
       }
 
-      public OverScrollContainer (Context context, AttributeSet attrs) {
+      public OverScrollContainer ( Context context, AttributeSet attrs ) {
 
-            this(context, attrs, 0);
+            this( context, attrs, 0 );
       }
 
-      public OverScrollContainer (Context context, AttributeSet attrs, int defStyleAttr) {
+      public OverScrollContainer ( Context context, AttributeSet attrs, int defStyleAttr ) {
 
-            super(context, attrs, defStyleAttr);
+            super( context, attrs, defStyleAttr );
             init();
       }
 
-      protected void init () {
+      protected void init ( ) {
 
-            mScroller = new OverScroller(getContext());
-            mTimeEngine = new TimeEngine(new AccelerateInterpolator());
+            mScroller = new OverScroller( getContext() );
+            mTimeEngine = new TimeEngine( new DecelerateInterpolator() );
       }
 
       /**
@@ -128,7 +128,7 @@ public abstract class OverScrollContainer<V extends ViewGroup>
        *
        * @param overScrollDistance touch overScroll distance
        */
-      public void setOverScrollDistance (int overScrollDistance) {
+      public void setOverScrollDistance ( int overScrollDistance ) {
 
             mOverScrollDistance = overScrollDistance;
       }
@@ -138,13 +138,13 @@ public abstract class OverScrollContainer<V extends ViewGroup>
        *
        * @param flingOverScrollDistance fling touch overScroll distance
        */
-      public void setFlingOverScrollDistance (int flingOverScrollDistance) {
+      public void setFlingOverScrollDistance ( int flingOverScrollDistance ) {
 
             mFlingOverScrollDistance = flingOverScrollDistance;
       }
 
       @Override
-      protected void onFinishInflate () {
+      protected void onFinishInflate ( ) {
 
             super.onFinishInflate();
             initChild();
@@ -152,23 +152,23 @@ public abstract class OverScrollContainer<V extends ViewGroup>
       }
 
       @SuppressWarnings("unchecked")
-      public void initChild () {
+      public void initChild ( ) {
 
-            mChild = (V) getChildAt(0);
+            mChild = (V) getChildAt( 0 );
       }
 
       /**
        * 为布局中的子view添加滚动监听,该监听必须在子view滑动时回调{@link #observeScroll(ScrollingView)}, 或者完成{@link
        * #observeScroll(ScrollingView)}相同的操作
        */
-      public abstract void addScrollListener ();
+      public abstract void addScrollListener ( );
 
       @Override
-      protected void onMeasure (int widthMeasureSpec, int heightMeasureSpec) {
+      protected void onMeasure ( int widthMeasureSpec, int heightMeasureSpec ) {
 
-            measureChildWithMargins(mChild,
-                                    widthMeasureSpec, getPaddingLeft() + getPaddingRight(),
-                                    heightMeasureSpec, getPaddingTop() + getPaddingBottom()
+            measureChildWithMargins( mChild,
+                                     widthMeasureSpec, getPaddingLeft() + getPaddingRight(),
+                                     heightMeasureSpec, getPaddingTop() + getPaddingBottom()
             );
 
             int measuredWidth = mChild.getMeasuredWidth();
@@ -181,9 +181,9 @@ public abstract class OverScrollContainer<V extends ViewGroup>
       }
 
       @Override
-      protected void onLayout (boolean changed, int l, int t, int r, int b) {
+      protected void onLayout ( boolean changed, int l, int t, int r, int b ) {
 
-            LayoutParams params = ((LayoutParams) mChild.getLayoutParams());
+            LayoutParams params = ( (LayoutParams) mChild.getLayoutParams() );
 
             int left = getPaddingLeft() + params.leftMargin;
             int top = getPaddingTop() + params.topMargin;
@@ -203,27 +203,27 @@ public abstract class OverScrollContainer<V extends ViewGroup>
        * <p>
        * abort scroller
        */
-      protected void finishScrollerIfNotFinish () {
+      protected void finishScrollerIfNotFinish ( ) {
 
-            if(!mScroller.isFinished()) {
+            if( !mScroller.isFinished() ) {
                   mScroller.abortAnimation();
             }
-            if(mTimeEngine.isRunning()) {
+            if( mTimeEngine.isRunning() ) {
                   mEndY = mStartY = getScrollY();
                   mTimeEngine.stop();
             }
       }
 
       @Override
-      public boolean onStartNestedScroll (View child, View target, int nestedScrollAxes) {
+      public boolean onStartNestedScroll ( View child, View target, int nestedScrollAxes ) {
 
             return child == mChild;
       }
 
       @Override
-      public void onNestedPreScroll (View target, int dx, int dy, int[] consumed) {
+      public void onNestedPreScroll ( View target, int dx, int dy, int[] consumed ) {
 
-            super.onNestedPreScroll(target, dx, dy, consumed);
+            super.onNestedPreScroll( target, dx, dy, consumed );
 
             finishScrollerIfNotFinish();
 
@@ -231,25 +231,25 @@ public abstract class OverScrollContainer<V extends ViewGroup>
 
             /* scroll to top , go on scroll min to -mOverScrollDistance */
 
-            if(overTopScroll(scrollY, dy, consumed)) {
+            if( overTopScroll( scrollY, dy, consumed ) ) {
                   return;
             }
 
             /* top still have shown, scroll to hide  */
 
-            if(overTopScrollBack(scrollY, dy, consumed)) {
+            if( overTopScrollBack( scrollY, dy, consumed ) ) {
                   return;
             }
 
             /* scroll to bottom , go on scroll, max to mOverScrollDistance*/
 
-            if(overBottomScroll(scrollY, dy, consumed)) {
+            if( overBottomScroll( scrollY, dy, consumed ) ) {
                   return;
             }
 
             /* bottom still have shown, scroll to hide  */
 
-            overBottomScrollBack(scrollY, dy, consumed);
+            overBottomScrollBack( scrollY, dy, consumed );
       }
 
       /**
@@ -261,13 +261,13 @@ public abstract class OverScrollContainer<V extends ViewGroup>
        *
        * @return true:{@link #onNestedPreScroll(View, int, int, int[])}将返回,不再执行后面的代码
        */
-      protected boolean overTopScroll (int scrollY, int dy, int[] consumed) {
+      protected boolean overTopScroll ( int scrollY, int dy, int[] consumed ) {
 
-            if(mScrollOffset == 0 && dy < 0) {
+            if( mScrollOffset == 0 && dy < 0 ) {
                   state = OVER_TOP;
-                  dy = calculateScrollDownDy(scrollY, dy, -mOverScrollDistance);
-                  scrollBy(0, dy);
-                  consumed[1] = dy;
+                  dy = calculateScrollDownDy( scrollY, dy, -mOverScrollDistance );
+                  scrollBy( 0, dy );
+                  consumed[ 1 ] = dy;
                   return true;
             }
 
@@ -283,16 +283,16 @@ public abstract class OverScrollContainer<V extends ViewGroup>
        *
        * @return true:{@link #onNestedPreScroll(View, int, int, int[])}将返回,不再执行后面的代码
        */
-      protected boolean overTopScrollBack (int scrollY, int dy, int[] consumed) {
+      protected boolean overTopScrollBack ( int scrollY, int dy, int[] consumed ) {
 
-            if(scrollY < 0 && dy > 0) {
+            if( scrollY < 0 && dy > 0 ) {
 
-                  if(scrollY + dy > 0) {
+                  if( scrollY + dy > 0 ) {
                         dy = -scrollY;
                         state = NORMAL;
                   }
-                  scrollBy(0, dy);
-                  consumed[1] = dy;
+                  scrollBy( 0, dy );
+                  consumed[ 1 ] = dy;
 
                   return true;
             }
@@ -309,13 +309,13 @@ public abstract class OverScrollContainer<V extends ViewGroup>
        *
        * @return true:{@link #onNestedPreScroll(View, int, int, int[])}将返回,不再执行后面的代码
        */
-      protected boolean overBottomScroll (int scrollY, int dy, int[] consumed) {
+      protected boolean overBottomScroll ( int scrollY, int dy, int[] consumed ) {
 
-            if(mScrollOffset + mScrollExtent == mScrollRange && dy > 0) {
+            if( mScrollOffset + mScrollExtent == mScrollRange && dy > 0 ) {
                   state = OVER_BOTTOM;
-                  dy = calculateScrollUpDy(scrollY, dy, mOverScrollDistance);
-                  scrollBy(0, dy);
-                  consumed[1] = dy;
+                  dy = calculateScrollUpDy( scrollY, dy, mOverScrollDistance );
+                  scrollBy( 0, dy );
+                  consumed[ 1 ] = dy;
                   return true;
             }
             return false;
@@ -330,16 +330,16 @@ public abstract class OverScrollContainer<V extends ViewGroup>
        *
        * @return true:{@link #onNestedPreScroll(View, int, int, int[])}将返回,不再执行后面的代码
        */
-      protected boolean overBottomScrollBack (int scrollY, int dy, int[] consumed) {
+      protected boolean overBottomScrollBack ( int scrollY, int dy, int[] consumed ) {
 
-            if(scrollY > 0 && dy < 0) {
+            if( scrollY > 0 && dy < 0 ) {
 
-                  if(scrollY + dy < 0) {
+                  if( scrollY + dy < 0 ) {
                         dy = -scrollY;
                         state = NORMAL;
                   }
-                  scrollBy(0, dy);
-                  consumed[1] = dy;
+                  scrollBy( 0, dy );
+                  consumed[ 1 ] = dy;
                   return true;
             }
 
@@ -355,24 +355,24 @@ public abstract class OverScrollContainer<V extends ViewGroup>
        *
        * @return 阻尼后滑动距离
        */
-      protected int calculateScrollDownDy (int scrollY, int dy, int minY) {
+      protected int calculateScrollDownDy ( int scrollY, int dy, int minY ) {
 
             int toY = scrollY + dy;
 
-            if(toY < 0) {
+            if( toY < 0 ) {
 
                   final float base = 1f;
 
                   float nearByPercent = toY * 1.f / minY;
-                  float newDY = dy * (1 - nearByPercent);
+                  float newDY = dy * ( 1 - nearByPercent );
 
-                  if(-newDY < base) {
+                  if( -newDY < base ) {
                         newDY = -1;
                   }
 
                   toY = scrollY + (int) newDY;
 
-                  if(toY < minY) {
+                  if( toY < minY ) {
                         dy = minY - scrollY;
                         return dy;
                   }
@@ -391,24 +391,24 @@ public abstract class OverScrollContainer<V extends ViewGroup>
        *
        * @return 阻尼后滑动距离
        */
-      protected int calculateScrollUpDy (int scrollY, int dy, int maxY) {
+      protected int calculateScrollUpDy ( int scrollY, int dy, int maxY ) {
 
             int toY = scrollY + dy;
 
-            if(toY > 0) {
+            if( toY > 0 ) {
 
                   final float base = 1f;
 
                   float nearByPercent = toY * 1.f / maxY;
-                  float newDY = dy * (1 - nearByPercent);
+                  float newDY = dy * ( 1 - nearByPercent );
 
-                  if(newDY < base) {
+                  if( newDY < base ) {
                         newDY = 1;
                   }
 
                   toY = scrollY + (int) newDY;
 
-                  if(toY > maxY) {
+                  if( toY > maxY ) {
                         dy = maxY - scrollY;
                         return dy;
                   }
@@ -421,20 +421,20 @@ public abstract class OverScrollContainer<V extends ViewGroup>
 
       @Override
       public boolean onNestedFling (
-          @NonNull View target, float velocityX, float velocityY, boolean consumed) {
+          @NonNull View target, float velocityX, float velocityY, boolean consumed ) {
 
-            boolean result = super.onNestedFling(target, velocityX, velocityY, consumed);
+            boolean result = super.onNestedFling( target, velocityX, velocityY, consumed );
 
             finishScrollerIfNotFinish();
 
             /* when is showing top or bottom , don't  fling  */
 
-            if(state == OVER_TOP) {
-                  return super.onNestedFling(target, velocityX, velocityY, consumed);
+            if( state == OVER_TOP ) {
+                  return super.onNestedFling( target, velocityX, velocityY, consumed );
             }
 
-            if(state == OVER_BOTTOM) {
-                  return super.onNestedFling(target, velocityX, velocityY, consumed);
+            if( state == OVER_BOTTOM ) {
+                  return super.onNestedFling( target, velocityX, velocityY, consumed );
             }
 
             /* record fling, when recycler is fling,but not invalidate() */
@@ -454,58 +454,58 @@ public abstract class OverScrollContainer<V extends ViewGroup>
       }
 
       @Override
-      public void computeScroll () {
+      public void computeScroll ( ) {
 
-            if(state == NORMAL) {
+            if( state == NORMAL ) {
                   return;
             }
 
-            if(mScroller.computeScrollOffset()) {
+            if( mScroller.computeScrollOffset() ) {
                   int y = mScroller.getCurrY();
-                  scrollTo(getScrollX(), y);
+                  scrollTo( getScrollX(), y );
                   invalidate();
                   return;
             }
 
-            if(mTimeEngine.isRunning()) {
+            if( mTimeEngine.isRunning() ) {
                   float fraction = mTimeEngine.getFraction();
-                  float currentY = mStartY + fraction * (mEndY - mStartY);
-                  scrollTo(getScrollX(), (int) currentY);
+                  float currentY = mStartY + fraction * ( mEndY - mStartY );
+                  scrollTo( getScrollX(), (int) currentY );
                   invalidate();
                   mIsEngineRunning = true;
                   return;
             }
 
-            if(mIsEngineRunning) {
-                  scrollTo(getScrollX(), 0);
+            if( mIsEngineRunning ) {
+                  scrollTo( getScrollX(), 0 );
                   mIsEngineRunning = false;
             }
 
             /* 之前都是 return 能执行到这,说明是invalidate调用了, computeScrollOffset结束了,需要更改状态标记*/
 
-            if(state == SCROLL_BACK || state == FLING) {
+            if( state == SCROLL_BACK || state == FLING ) {
                   state = NORMAL;
             }
       }
 
       @Override
-      public boolean dispatchTouchEvent (MotionEvent ev) {
+      public boolean dispatchTouchEvent ( MotionEvent ev ) {
 
-            boolean event = super.dispatchTouchEvent(ev);
+            boolean event = super.dispatchTouchEvent( ev );
 
             int action = ev.getAction();
 
-            if(action == MotionEvent.ACTION_DOWN) {
+            if( action == MotionEvent.ACTION_DOWN ) {
                   finishScrollerIfNotFinish();
             }
 
-            if(action == MotionEvent.ACTION_UP) {
+            if( action == MotionEvent.ACTION_UP ) {
 
-                  if(state == OVER_TOP) {
+                  if( state == OVER_TOP ) {
                         springBackFromTop();
                   }
 
-                  if(state == OVER_BOTTOM) {
+                  if( state == OVER_BOTTOM ) {
                         springBackFromBottom();
                   }
             }
@@ -518,9 +518,9 @@ public abstract class OverScrollContainer<V extends ViewGroup>
        *
        * @param scrollBackDuration 新的时长
        */
-      public void setScrollBackDuration (@IntRange(from = 0) int scrollBackDuration) {
+      public void setScrollBackDuration ( @IntRange(from = 0) int scrollBackDuration ) {
 
-            if(scrollBackDuration < 0) {
+            if( scrollBackDuration < 0 ) {
                   mScrollBackDuration = 240;
                   return;
             }
@@ -530,13 +530,13 @@ public abstract class OverScrollContainer<V extends ViewGroup>
       /**
        * 手指抬起后,回弹到原点
        */
-      protected void springBackFromTop () {
+      protected void springBackFromTop ( ) {
 
             state = SCROLL_BACK;
             mStartY = getScrollY();
             mEndY = 0;
 
-            mTimeEngine.setDuration(mScrollBackDuration).start();
+            mTimeEngine.setDuration( mScrollBackDuration ).start();
             mIsEngineRunning = true;
             invalidate();
       }
@@ -544,13 +544,13 @@ public abstract class OverScrollContainer<V extends ViewGroup>
       /**
        * 手指抬起后,回弹到原点
        */
-      protected void springBackFromBottom () {
+      protected void springBackFromBottom ( ) {
 
             state = SCROLL_BACK;
             mStartY = getScrollY();
             mEndY = 0;
 
-            mTimeEngine.setDuration(mScrollBackDuration).start();
+            mTimeEngine.setDuration( mScrollBackDuration ).start();
             mIsEngineRunning = true;
             invalidate();
       }
@@ -558,50 +558,50 @@ public abstract class OverScrollContainer<V extends ViewGroup>
       //============================layout params============================
 
       @Override
-      protected ViewGroup.LayoutParams generateDefaultLayoutParams () {
+      protected ViewGroup.LayoutParams generateDefaultLayoutParams ( ) {
 
             return new LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT );
       }
 
       @Override
-      protected ViewGroup.LayoutParams generateLayoutParams (ViewGroup.LayoutParams p) {
+      protected ViewGroup.LayoutParams generateLayoutParams ( ViewGroup.LayoutParams p ) {
 
-            return new LayoutParams(p);
+            return new LayoutParams( p );
       }
 
       @Override
-      public ViewGroup.LayoutParams generateLayoutParams (AttributeSet attrs) {
+      public ViewGroup.LayoutParams generateLayoutParams ( AttributeSet attrs ) {
 
-            return new LayoutParams(getContext(), attrs);
+            return new LayoutParams( getContext(), attrs );
       }
 
       public static class LayoutParams extends MarginLayoutParams {
 
-            public LayoutParams (Context c, AttributeSet attrs) {
+            public LayoutParams ( Context c, AttributeSet attrs ) {
 
-                  super(c, attrs);
+                  super( c, attrs );
             }
 
-            public LayoutParams (int width, int height) {
+            public LayoutParams ( int width, int height ) {
 
-                  super(width, height);
+                  super( width, height );
             }
 
-            public LayoutParams (MarginLayoutParams source) {
+            public LayoutParams ( MarginLayoutParams source ) {
 
-                  super(source);
+                  super( source );
             }
 
-            public LayoutParams (ViewGroup.LayoutParams source) {
+            public LayoutParams ( ViewGroup.LayoutParams source ) {
 
-                  super(source);
+                  super( source );
             }
       }
 
       //============================ 滚动监听 ============================
 
-      public <T extends ScrollingView> void observeScroll (T t) {
+      public <T extends ScrollingView> void observeScroll ( T t ) {
 
             mScrollExtent = t.computeVerticalScrollExtent();
             mScrollOffset = t.computeVerticalScrollOffset();
@@ -610,16 +610,16 @@ public abstract class OverScrollContainer<V extends ViewGroup>
             /* begin fling */
             /* only recycler fling to edge,  container begin fling*/
 
-            if(mScrollOffset == 0) {
-                  if(!mScroller.isFinished()) {
+            if( mScrollOffset == 0 ) {
+                  if( !mScroller.isFinished() ) {
                         state = FLING;
                         invalidate();
                         return;
                   }
             }
 
-            if(mScrollOffset + mScrollExtent == mScrollRange) {
-                  if(!mScroller.isFinished()) {
+            if( mScrollOffset + mScrollExtent == mScrollRange ) {
+                  if( !mScroller.isFinished() ) {
                         state = FLING;
                         invalidate();
                   }
