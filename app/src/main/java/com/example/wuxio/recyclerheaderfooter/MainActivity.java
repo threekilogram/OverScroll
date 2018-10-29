@@ -32,9 +32,9 @@ public class MainActivity extends AppCompatActivity {
                 CoolFragment.newInstance(),
                 ShowFragment.newInstance(),
                 HeaderFooterFragment.newInstance(),
-                HeaderFooterFragmentV2.newInstance(),
-                NestedFragment.newInstance(),
-                NestedHeaderFooterFragment.newInstance()
+//                HeaderFooterFragmentV2.newInstance(),
+//                NestedFragment.newInstance(),
+//                NestedHeaderFooterFragment.newInstance()
             };
 
             public MainPagerAdapter ( FragmentManager fm ) {

@@ -31,8 +31,8 @@ public class NestedOverScrollLayout extends ViewGroup implements NestedScrolling
       private int[] mConsumed       = new int[ 2 ];
       private int[] mOffsetInWindow = new int[ 2 ];
 
-      private int     mMaxOver = 200;
-      private int     mAction  = -1;
+      private int mMaxOverScrollDistance = 200;
+      private int mAction                = -1;
       private boolean isFling;
 
       private OverScroller mScroller;
@@ -60,6 +60,11 @@ public class NestedOverScrollLayout extends ViewGroup implements NestedScrolling
             setNestedScrollingEnabled( true );
 
             mScroller = new OverScroller( context, new DecelerateInterpolator() );
+      }
+
+      public void setMaxOverScrollDistance ( int maxOverScrollDistance ) {
+
+            mMaxOverScrollDistance = maxOverScrollDistance;
       }
 
       @Override
@@ -162,11 +167,12 @@ public class NestedOverScrollLayout extends ViewGroup implements NestedScrolling
                   int scrollY = getScrollY();
 
                   if( scrollY != 0 ) {
-                        int i = Math.abs( scrollY ) / 100 * 200;
+                        int duration = Math.abs( scrollY ) / 100 * 200;
                         if( !mScroller.isFinished() ) {
                               mScroller.forceFinished( true );
                         }
-                        mScroller.startScroll( 0, scrollY, 0, -scrollY, i );
+                        duration = Math.min( duration, 300 );
+                        mScroller.startScroll( 0, scrollY, 0, -scrollY, duration );
                         Log.e( TAG, "onStopNestedScroll : from up" );
                         invalidate();
                   }
@@ -213,9 +219,10 @@ public class NestedOverScrollLayout extends ViewGroup implements NestedScrolling
                   int parentLeft = dyUnconsumed + offsetY;
                   if( parentLeft < 0 ) {
                         int scrollY = getScrollY();
-                        int scrollDy = calculateScrollDy( parentLeft, scrollY, -mMaxOver );
-                        if( scrollY + scrollDy < -mMaxOver ) {
-                              scrollDy = -mMaxOver - scrollY;
+                        int scrollDy = calculateScrollDy(
+                            parentLeft, scrollY, -mMaxOverScrollDistance );
+                        if( scrollY + scrollDy < -mMaxOverScrollDistance ) {
+                              scrollDy = -mMaxOverScrollDistance - scrollY;
                               scrollBy( 0, scrollDy );
                         } else {
 
@@ -229,9 +236,11 @@ public class NestedOverScrollLayout extends ViewGroup implements NestedScrolling
                   int parentLeft = dyUnconsumed + offsetY;
                   if( parentLeft > 0 ) {
                         int scrollY = getScrollY();
-                        int scrollDy = calculateScrollDy( parentLeft, scrollY, mMaxOver );
-                        if( scrollY + scrollDy > mMaxOver ) {
-                              scrollDy = mMaxOver - scrollY;
+                        int scrollDy = calculateScrollDy( parentLeft, scrollY,
+                                                          mMaxOverScrollDistance
+                        );
+                        if( scrollY + scrollDy > mMaxOverScrollDistance ) {
+                              scrollDy = mMaxOverScrollDistance - scrollY;
                               scrollBy( 0, scrollDy );
                         } else {
 
@@ -380,7 +389,7 @@ public class NestedOverScrollLayout extends ViewGroup implements NestedScrolling
                       0, (int) velocityY,
                       0, 0,
                       0, 0,
-                      0, mMaxOver
+                      0, mMaxOverScrollDistance
                   );
                   Log.e( TAG, "dispatchNestedPreFling : from fling" );
             }

@@ -55,8 +55,8 @@ public class ShowFragment extends Fragment {
             mRecycler.setLayoutManager(new LinearLayoutManager(getContext()));
             mRecycler.setAdapter(new MainAdapter());
 
-            //mOverScrollLayout = rootView.findViewById(R.id.overScroll);
-            //mOverScrollLayout.setOverScrollDistance(200);
+            mOverScrollLayout = rootView.findViewById( R.id.overScroll );
+            mOverScrollLayout.setMaxOverScrollDistance( 400 );
       }
 
       //============================ recycler need ============================
