@@ -90,7 +90,7 @@ public class NestedOverScrollLayout extends ViewGroup implements NestedScrolling
             int heightSize = MeasureSpec.getSize( heightMeasureSpec );
 
             View view = getChildAt( 0 );
-            view.measure( widthMeasureSpec, heightMeasureSpec );
+            measureChild( view, widthMeasureSpec, heightMeasureSpec );
             int minContentWidth = view.getMeasuredWidth();
             int minContentHeight = view.getMeasuredHeight();
 

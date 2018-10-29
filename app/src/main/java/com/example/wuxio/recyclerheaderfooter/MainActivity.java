@@ -32,6 +32,7 @@ public class MainActivity extends AppCompatActivity {
                 CoolFragment.newInstance(),
                 RecyclerOverScrollFragment.newInstance(),
                 NestedOverScrollFragment.newInstance(),
+                NestedRefreshFragment.newInstance(),
                 //HeaderFooterFragment.newInstance(),
 //                HeaderFooterFragmentV2.newInstance(),
 //                NestedFragment.newInstance(),

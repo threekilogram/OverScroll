@@ -9,6 +9,7 @@ import android.support.v4.view.NestedScrollingParent2;
 import android.support.v4.view.NestedScrollingParentHelper;
 import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.DecelerateInterpolator;
@@ -29,8 +30,11 @@ public class NestedRefreshLayout extends ViewGroup implements NestedScrollingPar
       private int[] mOffsetInWindow = new int[ 2 ];
 
       private int mMaxOverScrollDistance = 200;
+      private int mAction;
 
       private OverScroller mScroller;
+
+      private RefreshAdapter mRefreshAdapter;
 
       public NestedRefreshLayout ( Context context ) {
 
@@ -57,11 +61,6 @@ public class NestedRefreshLayout extends ViewGroup implements NestedScrollingPar
             mScroller = new OverScroller( context, new DecelerateInterpolator() );
       }
 
-      public void setMaxOverScrollDistance ( int maxOverScrollDistance ) {
-
-            mMaxOverScrollDistance = maxOverScrollDistance;
-      }
-
       @Override
       protected void onMeasure ( int widthMeasureSpec, int heightMeasureSpec ) {
 
@@ -71,7 +70,7 @@ public class NestedRefreshLayout extends ViewGroup implements NestedScrollingPar
             int heightSize = MeasureSpec.getSize( heightMeasureSpec );
 
             View view = getChildAt( 0 );
-            view.measure( widthMeasureSpec, heightMeasureSpec );
+            measureChild( view, widthMeasureSpec, heightMeasureSpec );
             int minContentWidth = view.getMeasuredWidth();
             int minContentHeight = view.getMeasuredHeight();
 
@@ -103,6 +102,23 @@ public class NestedRefreshLayout extends ViewGroup implements NestedScrollingPar
             }
 
             setMeasuredDimension( finalWidth, finalHeight );
+
+            try {
+                  View child = getChildAt( 1 );
+                  measureChild(
+                      child,
+                      MeasureSpec.makeMeasureSpec( finalWidth, MeasureSpec.EXACTLY ),
+                      MeasureSpec.makeMeasureSpec( finalHeight, MeasureSpec.AT_MOST )
+                  );
+
+                  int measuredHeight = child.getMeasuredHeight();
+
+                  if( measuredHeight > mMaxOverScrollDistance ) {
+                        mMaxOverScrollDistance = measuredHeight;
+                  }
+            } catch(Exception e) {
+                  /* nothing */
+            }
       }
 
       @Override
@@ -110,6 +126,20 @@ public class NestedRefreshLayout extends ViewGroup implements NestedScrollingPar
 
             View child = getChildAt( 0 );
             child.layout( 0, 0, child.getMeasuredWidth(), child.getMeasuredHeight() );
+
+            try {
+                  View view = getChildAt( 1 );
+                  view.layout( 0, -view.getMeasuredHeight(), view.getMeasuredWidth(), 0 );
+            } catch(Exception e) {
+                  /* nothing */
+            }
+      }
+
+      @Override
+      public boolean dispatchTouchEvent ( MotionEvent ev ) {
+
+            mAction = ev.getAction();
+            return super.dispatchTouchEvent( ev );
       }
 
       @Override
@@ -119,8 +149,30 @@ public class NestedRefreshLayout extends ViewGroup implements NestedScrollingPar
             if( mScroller.computeScrollOffset() ) {
                   int currY = mScroller.getCurrY();
                   scrollTo( getScrollX(), currY );
+                  if( mRefreshAdapter != null ) {
+                        mRefreshAdapter.onScrollBack( getScrollY() );
+                  }
                   invalidate();
             }
+      }
+
+      public void setMaxOverScrollDistance ( int maxOverScrollDistance ) {
+
+            mMaxOverScrollDistance = maxOverScrollDistance;
+      }
+
+      public void setRefreshAdapter ( RefreshAdapter refreshAdapter ) {
+
+            mRefreshAdapter = refreshAdapter;
+            addView(
+                refreshAdapter.getRefreshView( getContext() ),
+                1
+            );
+      }
+
+      public RefreshAdapter getRefreshAdapter ( ) {
+
+            return mRefreshAdapter;
       }
 
       // ========================= parent =========================
@@ -145,6 +197,28 @@ public class NestedRefreshLayout extends ViewGroup implements NestedScrollingPar
 
             mChildHelper.stopNestedScroll( type );
             stopNestedScroll( type );
+
+            if( mAction == MotionEvent.ACTION_UP ) {
+                  mAction = 0;
+                  if( mRefreshAdapter != null ) {
+                        mRefreshAdapter.release( getScrollY(), mMaxOverScrollDistance );
+                  }
+            }
+      }
+
+      /**
+       * 向回滚动一段距离
+       */
+      public void startScroll ( int dy ) {
+
+            int scrollY = getScrollY();
+            int duration = Math.abs( scrollY ) / 100 * 200;
+            if( !mScroller.isFinished() ) {
+                  mScroller.forceFinished( true );
+            }
+            duration = Math.min( duration, 300 );
+            mScroller.startScroll( 0, scrollY, 0, dy, duration );
+            invalidate();
       }
 
       @Override
@@ -161,7 +235,7 @@ public class NestedRefreshLayout extends ViewGroup implements NestedScrollingPar
 
             int offsetY = mOffsetInWindow[ 1 ];
 
-            if( dyUnconsumed < 0 ) {
+            if( mAction == MotionEvent.ACTION_MOVE && dyUnconsumed < 0 ) {
                   /* 向下 */
                   int parentLeft = dyUnconsumed + offsetY;
                   if( parentLeft < 0 ) {
@@ -175,26 +249,12 @@ public class NestedRefreshLayout extends ViewGroup implements NestedScrollingPar
 
                               scrollBy( 0, scrollDy );
                         }
+
+                        if( mRefreshAdapter != null ) {
+                              mRefreshAdapter.onMove( -1, getScrollY(), mMaxOverScrollDistance );
+                        }
                   }
             }
-
-//            if( dyUnconsumed > 0 ) {
-//                  /* 向上 */
-//                  int parentLeft = dyUnconsumed + offsetY;
-//                  if( parentLeft > 0 ) {
-//                        int scrollY = getScrollY();
-//                        int scrollDy = calculateScrollDy( parentLeft, scrollY,
-//                                                          mMaxOverScrollDistance
-//                        );
-//                        if( scrollY + scrollDy > mMaxOverScrollDistance ) {
-//                              scrollDy = mMaxOverScrollDistance - scrollY;
-//                              scrollBy( 0, scrollDy );
-//                        } else {
-//
-//                              scrollBy( 0, scrollDy );
-//                        }
-//                  }
-//            }
       }
 
       /**
@@ -216,7 +276,7 @@ public class NestedRefreshLayout extends ViewGroup implements NestedScrollingPar
 
             int scrollY = getScrollY();
 
-            if( dy > 0 && scrollY < 0 ) {
+            if( mAction == MotionEvent.ACTION_MOVE && dy > 0 && scrollY < 0 ) {
 
                   int scrollDy = dy;
                   if( scrollDy + scrollY > 0 ) {
@@ -232,33 +292,15 @@ public class NestedRefreshLayout extends ViewGroup implements NestedScrollingPar
                   } else {
 
                         scrollBy( 0, scrollDy );
-                        consumed[ 1 ] = dy;
+                        consumed[ 1 ] = scrollDy;
+                  }
+
+                  if( mRefreshAdapter != null ) {
+                        mRefreshAdapter.onMove( 1, getScrollY(), mMaxOverScrollDistance );
                   }
 
                   return;
             }
-
-//            if( dy < 0 && scrollY > 0 ) {
-//
-//                  int scrollDy = dy;
-//                  if( scrollDy + scrollY < 0 ) {
-//                        scrollDy = -scrollY;
-//                        scrollBy( 0, scrollDy );
-//                        int left = dy - scrollDy;
-//
-//                        mConsumed[ 0 ] = mConsumed[ 1 ] = 0;
-//                        mChildHelper
-//                            .dispatchNestedPreScroll( dx, left, mConsumed, mOffsetInWindow, type );
-//
-//                        consumed[ 1 ] = mConsumed[ 1 ] + scrollDy;
-//                  } else {
-//
-//                        scrollBy( 0, scrollDy );
-//                        consumed[ 1 ] = dy;
-//                  }
-//
-//                  return;
-//            }
 
             mChildHelper.dispatchNestedPreScroll(
                 dx, dy,
@@ -329,5 +371,41 @@ public class NestedRefreshLayout extends ViewGroup implements NestedScrollingPar
       public boolean dispatchNestedPreFling ( float velocityX, float velocityY ) {
 
             return mChildHelper.dispatchNestedPreFling( velocityX, velocityY );
+      }
+
+      public interface RefreshAdapter {
+
+            /**
+             * 获取refresh view
+             *
+             * @param context context
+             *
+             * @return refresh view
+             */
+            View getRefreshView ( Context context );
+
+            /**
+             * 触摸刷新时回调
+             *
+             * @param orientation 方向
+             * @param scrollY 当前
+             * @param maxScrollY 最大
+             */
+            void onMove ( int orientation, int scrollY, int maxScrollY );
+
+            /**
+             * 手指释放
+             *
+             * @param scrollY 当前
+             * @param maxScrollY 最大
+             */
+            void release ( int scrollY, int maxScrollY );
+
+            /**
+             * 自动回滚时
+             *
+             * @param scrollY 当前
+             */
+            void onScrollBack ( int scrollY );
       }
 }
