@@ -9,56 +9,49 @@ import android.support.v7.app.AppCompatActivity;
 
 public class MainActivity extends AppCompatActivity {
 
-    private static final String TAG = "MainActivity";
-    protected ViewPager mViewPager;
+      private static final String    TAG = "MainActivity";
+      protected            ViewPager mViewPager;
 
+      @Override
+      protected void onCreate ( Bundle savedInstanceState ) {
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
+            super.onCreate( savedInstanceState );
+            super.setContentView( R.layout.activity_main );
+            initView();
+      }
 
-        super.onCreate(savedInstanceState);
-        super.setContentView(R.layout.activity_main);
-        initView();
+      private void initView ( ) {
 
-    }
+            mViewPager = findViewById( R.id.viewPager );
+            mViewPager.setAdapter( new MainPagerAdapter( getSupportFragmentManager() ) );
+      }
 
+      private class MainPagerAdapter extends FragmentPagerAdapter {
 
-    private void initView() {
-
-        mViewPager = findViewById(R.id.viewPager);
-        mViewPager.setAdapter(new MainPagerAdapter(getSupportFragmentManager()));
-    }
-
-
-    private class MainPagerAdapter extends FragmentPagerAdapter {
-
-        Fragment[] mFragments = {
+            Fragment[] mFragments = {
+                CoolFragment.newInstance(),
                 ShowFragment.newInstance(),
                 HeaderFooterFragment.newInstance(),
                 HeaderFooterFragmentV2.newInstance(),
                 NestedFragment.newInstance(),
                 NestedHeaderFooterFragment.newInstance()
-        };
+            };
 
+            public MainPagerAdapter ( FragmentManager fm ) {
 
-        public MainPagerAdapter(FragmentManager fm) {
+                  super( fm );
+            }
 
-            super(fm);
-        }
+            @Override
+            public Fragment getItem ( int position ) {
 
+                  return mFragments[ position ];
+            }
 
-        @Override
-        public Fragment getItem(int position) {
+            @Override
+            public int getCount ( ) {
 
-            return mFragments[position];
-        }
-
-
-        @Override
-        public int getCount() {
-
-            return mFragments.length;
-        }
-    }
-
+                  return mFragments.length;
+            }
+      }
 }
