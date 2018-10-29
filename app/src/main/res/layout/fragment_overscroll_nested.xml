@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<tech.threekilogram.overscroll.NestedOverScrollLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/overScroll"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+      <android.support.v4.widget.NestedScrollView
+          android:id="@+id/nested"
+          android:layout_width="match_parent"
+          android:layout_height="match_parent"
+          android:overScrollMode="never">
+            <LinearLayout
+                android:id="@+id/content"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+            </LinearLayout>
+      </android.support.v4.widget.NestedScrollView>
+
+</tech.threekilogram.overscroll.NestedOverScrollLayout>

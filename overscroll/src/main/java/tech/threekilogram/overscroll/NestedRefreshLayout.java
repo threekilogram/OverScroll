@@ -9,8 +9,6 @@ import android.support.v4.view.NestedScrollingParent2;
 import android.support.v4.view.NestedScrollingParentHelper;
 import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
-import android.util.Log;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.DecelerateInterpolator;
@@ -19,49 +17,32 @@ import android.widget.OverScroller;
 /**
  * @author Liujin 2018-10-28:21:17
  */
-public class NestedOverScrollLayout extends ViewGroup implements NestedScrollingParent2,
-                                                                 NestedScrollingChild2 {
+public class NestedRefreshLayout extends ViewGroup implements NestedScrollingParent2,
+                                                              NestedScrollingChild2 {
 
-      private static final String TAG = NestedOverScrollLayout.class.getSimpleName();
+      private static final String TAG = NestedRefreshLayout.class.getSimpleName();
 
       private NestedScrollingParentHelper mParentHelper;
       private NestedScrollingChildHelper  mChildHelper;
 
-      private int[] mConsumed       = new int[ 2 ];
+      private int[] mConsumed = new int[ 2 ];
       private int[] mOffsetInWindow = new int[ 2 ];
 
-      /**
-       * 最大 Over Scroll 距离
-       */
-      private int          mMaxOverScrollDistance = 200;
-      /**
-       * 记录手势行为
-       */
-      private int          mAction                = -1;
-      /**
-       * 记录是否需要fling操作
-       */
-      private boolean      isFling;
-      /**
-       * 记录需要fling操作后是否已经刷新界面
-       */
-      private boolean      isFlingValidated;
-      /**
-       * fling 回弹
-       */
+      private int mMaxOverScrollDistance = 200;
+
       private OverScroller mScroller;
 
-      public NestedOverScrollLayout ( Context context ) {
+      public NestedRefreshLayout ( Context context ) {
 
             this( context, null, 0 );
       }
 
-      public NestedOverScrollLayout ( Context context, AttributeSet attrs ) {
+      public NestedRefreshLayout ( Context context, AttributeSet attrs ) {
 
             this( context, attrs, 0 );
       }
 
-      public NestedOverScrollLayout ( Context context, AttributeSet attrs, int defStyleAttr ) {
+      public NestedRefreshLayout ( Context context, AttributeSet attrs, int defStyleAttr ) {
 
             super( context, attrs, defStyleAttr );
             init( context );
@@ -132,17 +113,6 @@ public class NestedOverScrollLayout extends ViewGroup implements NestedScrolling
       }
 
       @Override
-      public boolean dispatchTouchEvent ( MotionEvent ev ) {
-
-            mAction = ev.getAction();
-            if( ev.getAction() == MotionEvent.ACTION_DOWN ) {
-                  isFling = false;
-                  mScroller.forceFinished( true );
-            }
-            return super.dispatchTouchEvent( ev );
-      }
-
-      @Override
       public void computeScroll ( ) {
 
             super.computeScroll();
@@ -175,22 +145,6 @@ public class NestedOverScrollLayout extends ViewGroup implements NestedScrolling
 
             mChildHelper.stopNestedScroll( type );
             stopNestedScroll( type );
-
-            if( mAction == MotionEvent.ACTION_UP ) {
-
-                  int scrollY = getScrollY();
-
-                  if( scrollY != 0 ) {
-                        int duration = Math.abs( scrollY ) / 100 * 200;
-                        if( !mScroller.isFinished() ) {
-                              mScroller.forceFinished( true );
-                        }
-                        duration = Math.min( duration, 300 );
-                        mScroller.startScroll( 0, scrollY, 0, -scrollY, duration );
-                        Log.e( TAG, "onStopNestedScroll : from up" );
-                        invalidate();
-                  }
-            }
       }
 
       @Override
@@ -206,17 +160,6 @@ public class NestedOverScrollLayout extends ViewGroup implements NestedScrolling
             );
 
             int offsetY = mOffsetInWindow[ 1 ];
-
-            if( isFling ) {
-
-                  if( dyConsumed == 0 && offsetY == 0 ) {
-                        if( !isFlingValidated ) {
-                              isFlingValidated = true;
-                              invalidate();
-                        }
-                  }
-                  return;
-            }
 
             if( dyUnconsumed < 0 ) {
                   /* 向下 */
@@ -235,23 +178,23 @@ public class NestedOverScrollLayout extends ViewGroup implements NestedScrolling
                   }
             }
 
-            if( dyUnconsumed > 0 ) {
-                  /* 向上 */
-                  int parentLeft = dyUnconsumed + offsetY;
-                  if( parentLeft > 0 ) {
-                        int scrollY = getScrollY();
-                        int scrollDy = calculateScrollDy( parentLeft, scrollY,
-                                                          mMaxOverScrollDistance
-                        );
-                        if( scrollY + scrollDy > mMaxOverScrollDistance ) {
-                              scrollDy = mMaxOverScrollDistance - scrollY;
-                              scrollBy( 0, scrollDy );
-                        } else {
-
-                              scrollBy( 0, scrollDy );
-                        }
-                  }
-            }
+//            if( dyUnconsumed > 0 ) {
+//                  /* 向上 */
+//                  int parentLeft = dyUnconsumed + offsetY;
+//                  if( parentLeft > 0 ) {
+//                        int scrollY = getScrollY();
+//                        int scrollDy = calculateScrollDy( parentLeft, scrollY,
+//                                                          mMaxOverScrollDistance
+//                        );
+//                        if( scrollY + scrollDy > mMaxOverScrollDistance ) {
+//                              scrollDy = mMaxOverScrollDistance - scrollY;
+//                              scrollBy( 0, scrollDy );
+//                        } else {
+//
+//                              scrollBy( 0, scrollDy );
+//                        }
+//                  }
+//            }
       }
 
       /**
@@ -295,27 +238,27 @@ public class NestedOverScrollLayout extends ViewGroup implements NestedScrolling
                   return;
             }
 
-            if( dy < 0 && scrollY > 0 ) {
-
-                  int scrollDy = dy;
-                  if( scrollDy + scrollY < 0 ) {
-                        scrollDy = -scrollY;
-                        scrollBy( 0, scrollDy );
-                        int left = dy - scrollDy;
-
-                        mConsumed[ 0 ] = mConsumed[ 1 ] = 0;
-                        mChildHelper
-                            .dispatchNestedPreScroll( dx, left, mConsumed, mOffsetInWindow, type );
-
-                        consumed[ 1 ] = mConsumed[ 1 ] + scrollDy;
-                  } else {
-
-                        scrollBy( 0, scrollDy );
-                        consumed[ 1 ] = dy;
-                  }
-
-                  return;
-            }
+//            if( dy < 0 && scrollY > 0 ) {
+//
+//                  int scrollDy = dy;
+//                  if( scrollDy + scrollY < 0 ) {
+//                        scrollDy = -scrollY;
+//                        scrollBy( 0, scrollDy );
+//                        int left = dy - scrollDy;
+//
+//                        mConsumed[ 0 ] = mConsumed[ 1 ] = 0;
+//                        mChildHelper
+//                            .dispatchNestedPreScroll( dx, left, mConsumed, mOffsetInWindow, type );
+//
+//                        consumed[ 1 ] = mConsumed[ 1 ] + scrollDy;
+//                  } else {
+//
+//                        scrollBy( 0, scrollDy );
+//                        consumed[ 1 ] = dy;
+//                  }
+//
+//                  return;
+//            }
 
             mChildHelper.dispatchNestedPreScroll(
                 dx, dy,
@@ -384,20 +327,6 @@ public class NestedOverScrollLayout extends ViewGroup implements NestedScrolling
 
       @Override
       public boolean dispatchNestedPreFling ( float velocityX, float velocityY ) {
-
-            if( mScroller.isFinished() ) {
-
-                  isFling = true;
-                  isFlingValidated = false;
-                  mScroller.fling(
-                      0, getScrollY(),
-                      0, (int) velocityY,
-                      0, 0,
-                      0, 0,
-                      0, mMaxOverScrollDistance
-                  );
-                  Log.e( TAG, "dispatchNestedPreFling : from fling" );
-            }
 
             return mChildHelper.dispatchNestedPreFling( velocityX, velocityY );
       }

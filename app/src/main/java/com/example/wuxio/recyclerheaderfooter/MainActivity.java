@@ -30,8 +30,9 @@ public class MainActivity extends AppCompatActivity {
 
             Fragment[] mFragments = {
                 CoolFragment.newInstance(),
-                ShowFragment.newInstance(),
-                HeaderFooterFragment.newInstance(),
+                RecyclerOverScrollFragment.newInstance(),
+                NestedOverScrollFragment.newInstance(),
+                //HeaderFooterFragment.newInstance(),
 //                HeaderFooterFragmentV2.newInstance(),
 //                NestedFragment.newInstance(),
 //                NestedHeaderFooterFragment.newInstance()

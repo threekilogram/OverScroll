@@ -18,16 +18,16 @@ import tech.threekilogram.overscroll.NestedOverScrollLayout;
 /**
  * @author wuxio 2018-04-08:13:12
  */
-public class ShowFragment extends Fragment {
+public class RecyclerOverScrollFragment extends Fragment {
 
       protected View                   rootView;
       protected RecyclerView           mRecycler;
       protected NestedOverScrollLayout mOverScrollLayout;
 
       @SuppressWarnings("UnnecessaryLocalVariable")
-      public static ShowFragment newInstance () {
+      public static RecyclerOverScrollFragment newInstance ( ) {
 
-            ShowFragment fragment = new ShowFragment();
+            RecyclerOverScrollFragment fragment = new RecyclerOverScrollFragment();
             return fragment;
       }
 

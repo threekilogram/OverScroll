@@ -13,198 +13,111 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import tech.threekilogram.overscroll.HeaderFooterLayout;
+import tech.threekilogram.overscroll.NestedRefreshLayout;
 
 /**
  * @author wuxio 2018-04-08:13:12
  */
 public class HeaderFooterFragment extends Fragment {
 
-    protected View               rootView;
-    protected RecyclerView       mRecycler;
-    protected HeaderFooterLayout mHeaderFooter;
-    private   MainAdapter        mAdapter;
+      protected View                rootView;
+      protected RecyclerView        mRecycler;
+      protected NestedRefreshLayout mHeaderFooter;
+      private   MainAdapter         mAdapter;
 
+      @SuppressWarnings("UnnecessaryLocalVariable")
+      public static HeaderFooterFragment newInstance ( ) {
 
-    @SuppressWarnings("UnnecessaryLocalVariable")
-    public static HeaderFooterFragment newInstance() {
+            HeaderFooterFragment fragment = new HeaderFooterFragment();
+            return fragment;
+      }
 
-        HeaderFooterFragment fragment = new HeaderFooterFragment();
-        return fragment;
-    }
+      @Nullable
+      @Override
+      public View onCreateView (
+          @NonNull LayoutInflater inflater,
+          @Nullable ViewGroup container,
+          @Nullable Bundle savedInstanceState ) {
 
+            rootView = inflater.inflate( R.layout.fragment_header_footer, container, false );
+            return rootView;
+      }
 
-    @Nullable
-    @Override
-    public View onCreateView(
-            @NonNull LayoutInflater inflater,
-            @Nullable ViewGroup container,
-            @Nullable Bundle savedInstanceState) {
+      @Override
+      public void onViewCreated ( @NonNull View view, @Nullable Bundle savedInstanceState ) {
 
-        rootView = inflater.inflate(R.layout.fragment_header_footer, container, false);
-        return rootView;
-    }
+            super.onViewCreated( view, savedInstanceState );
+            initView( view );
+      }
 
+      private void initView ( View rootView ) {
 
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+            mRecycler = rootView.findViewById( R.id.recycler );
+            mRecycler.setLayoutManager( new LinearLayoutManager( getContext() ) );
+            mAdapter = new MainAdapter();
+            mRecycler.setAdapter( mAdapter );
 
-        super.onViewCreated(view, savedInstanceState);
-        initView(view);
-    }
+            //mHeaderFooter = rootView.findViewById(R.id.headerFooter);
+      }
 
+      //============================ recycler need ============================
 
-    private void initView(View rootView) {
+      private class MainAdapter extends RecyclerView.Adapter<MainTextHolder> {
 
-        mRecycler = rootView.findViewById(R.id.recycler);
-        mRecycler.setLayoutManager(new LinearLayoutManager(getContext()));
-        mAdapter = new MainAdapter();
-        mRecycler.setAdapter(mAdapter);
+            private LayoutInflater mInflater;
 
-        mHeaderFooter = rootView.findViewById(R.id.headerFooter);
-        mHeaderFooter.setHeader(R.layout.item_main_recycler);
-        mHeaderFooter.setFooter(R.layout.item_main_recycler);
+            List<Integer> mList = new ArrayList<>();
 
-        mHeaderFooter.setOverScrollListener(new HeaderFooterLayout.OnOverScrollListener() {
-            @Override
-            public void onScrollOverTop(View header, int scrollY) {
-
-                ((TextView) header).setText(String.valueOf(scrollY));
-                if (scrollY < -200) {
-                    mHeaderFooter.stopScrollBack();
-                }
+            {
+                  for( int i = 0; i < 50; i++ ) {
+                        mList.add( i );
+                  }
             }
 
+            public List<Integer> getList ( ) {
 
-            @Override
-            public void onOverTopTouchUp(View header, int scrollY) {
-
-                ((TextView) header).setText(" refreshing ");
-
-                if (scrollY < -200) {
-
-                    int dy = scrollY - -200;
-                    mHeaderFooter.scrollBack(-dy);
-                }
-
-                mHeaderFooter.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-
-                        mHeaderFooter.scrollBack();
-                    }
-                }, 3000);
+                  return mList;
             }
 
+            @NonNull
+            @Override
+            public MainTextHolder onCreateViewHolder ( @NonNull ViewGroup parent, int viewType ) {
+
+                  if( mInflater == null ) {
+                        mInflater = LayoutInflater.from( parent.getContext() );
+                  }
+
+                  View view = mInflater.inflate( R.layout.item_main_recycler, parent, false );
+                  return new MainTextHolder( view );
+            }
 
             @Override
-            public void onScrollOverBottom(View footer, int scrollY) {
+            public void onBindViewHolder ( @NonNull MainTextHolder holder, int position ) {
 
-                ((TextView) footer).setText(String.valueOf(scrollY));
-                mHeaderFooter.stopScrollBack();
+                  holder.bind( mList.get( position ) );
             }
-
 
             @Override
-            public void onOverBottomTouchUp(View footer, int scrollY) {
+            public int getItemCount ( ) {
 
-                if (scrollY < 200) {
-                    mHeaderFooter.scrollBack();
-                    return;
-                }
-
-                if (scrollY > 200) {
-                    int dy = scrollY - 200;
-                    mHeaderFooter.scrollBack(-dy);
-                    ((TextView) footer).setText(" refreshing ");
-                }
-
-                mHeaderFooter.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-
-                        List< Integer > list = mAdapter.getList();
-
-                        final int size = list.size();
-
-                        for (int i = 0; i < 10; i++) {
-                            list.add(size + i);
-                        }
-                        mAdapter.notifyDataSetChanged();
-
-                        mHeaderFooter.reLayout();
-                    }
-                }, 3000);
+                  return mList.size();
             }
-        });
+      }
 
-    }
+      private class MainTextHolder extends RecyclerView.ViewHolder {
 
-    //============================ recycler need ============================
+            private final TextView mTextView;
 
-    private class MainAdapter extends RecyclerView.Adapter< MainTextHolder > {
+            public MainTextHolder ( View itemView ) {
 
-        private LayoutInflater mInflater;
-
-        List< Integer > mList = new ArrayList<>();
-
-        {
-            for (int i = 0; i < 50; i++) {
-                mList.add(i);
+                  super( itemView );
+                  mTextView = (TextView) itemView;
             }
 
-        }
+            public void bind ( int position ) {
 
-        public List< Integer > getList() {
-
-            return mList;
-        }
-
-
-        @NonNull
-        @Override
-        public MainTextHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-
-            if (mInflater == null) {
-                mInflater = LayoutInflater.from(parent.getContext());
+                  String s = String.format( Locale.CHINA, "recycler Item %d", position );
+                  mTextView.setText( s );
             }
-
-            View view = mInflater.inflate(R.layout.item_main_recycler, parent, false);
-            return new MainTextHolder(view);
-        }
-
-
-        @Override
-        public void onBindViewHolder(@NonNull MainTextHolder holder, int position) {
-
-            holder.bind(mList.get(position));
-        }
-
-
-        @Override
-        public int getItemCount() {
-
-            return mList.size();
-        }
-    }
-
-    private class MainTextHolder extends RecyclerView.ViewHolder {
-
-
-        private final TextView mTextView;
-
-
-        public MainTextHolder(View itemView) {
-
-            super(itemView);
-            mTextView = (TextView) itemView;
-        }
-
-
-        public void bind(int position) {
-
-            String s = String.format(Locale.CHINA, "recycler Item %d", position);
-            mTextView.setText(s);
-        }
-    }
+      }
 }
