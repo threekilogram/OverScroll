@@ -5,7 +5,6 @@
     android:layout_width="match_parent"
     android:layout_height="48dp"
     android:gravity="center"
-    android:background="@drawable/line"
     android:textColor="@android:color/black"
     android:textSize="24sp"
     tools:text="Test text">

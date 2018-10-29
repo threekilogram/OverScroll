@@ -13,16 +13,16 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import tech.threekilogram.overscroll.OverScrollLayout;
+import tech.threekilogram.overscroll.NestedOverScrollLayout;
 
 /**
  * @author wuxio 2018-04-08:13:12
  */
 public class ShowFragment extends Fragment {
 
-      protected View             rootView;
-      protected RecyclerView     mRecycler;
-      protected OverScrollLayout mOverScrollLayout;
+      protected View                   rootView;
+      protected RecyclerView           mRecycler;
+      protected NestedOverScrollLayout mOverScrollLayout;
 
       @SuppressWarnings("UnnecessaryLocalVariable")
       public static ShowFragment newInstance () {
@@ -55,8 +55,8 @@ public class ShowFragment extends Fragment {
             mRecycler.setLayoutManager(new LinearLayoutManager(getContext()));
             mRecycler.setAdapter(new MainAdapter());
 
-            mOverScrollLayout = rootView.findViewById(R.id.overScroll);
-            mOverScrollLayout.setOverScrollDistance(200);
+            //mOverScrollLayout = rootView.findViewById(R.id.overScroll);
+            //mOverScrollLayout.setOverScrollDistance(200);
       }
 
       //============================ recycler need ============================
@@ -68,7 +68,7 @@ public class ShowFragment extends Fragment {
             List<Integer> mList = new ArrayList<>();
 
             {
-                  for(int i = 0; i < 50; i++) {
+                  for( int i = 0; i < 20; i++ ) {
                         mList.add(i);
                   }
             }

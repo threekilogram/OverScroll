@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<tech.threekilogram.overscroll.OverScrollLayout
+<tech.threekilogram.overscroll.NestedOverScrollLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/overScroll"
     android:layout_width="match_parent"
@@ -12,4 +12,4 @@
           android:overScrollMode="never"
           />
 
-</tech.threekilogram.overscroll.OverScrollLayout>
+</tech.threekilogram.overscroll.NestedOverScrollLayout>
