@@ -33,10 +33,6 @@ public class MainActivity extends AppCompatActivity {
                 RecyclerOverScrollFragment.newInstance(),
                 NestedOverScrollFragment.newInstance(),
                 NestedRefreshFragment.newInstance(),
-                //HeaderFooterFragment.newInstance(),
-//                HeaderFooterFragmentV2.newInstance(),
-//                NestedFragment.newInstance(),
-//                NestedHeaderFooterFragment.newInstance()
             };
 
             public MainPagerAdapter ( FragmentManager fm ) {
