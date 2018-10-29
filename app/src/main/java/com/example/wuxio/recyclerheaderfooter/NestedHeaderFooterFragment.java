@@ -15,7 +15,6 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import java.util.Locale;
-import tech.threekilogram.overscroll.HeaderFooterLayout;
 
 /**
  * @author wuxio 2018-04-08:13:12

@@ -13,7 +13,6 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import tech.threekilogram.overscroll.HeaderFooterLayout;
 
 /**
  * @author wuxio 2018-04-08:13:12
