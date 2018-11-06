@@ -8,15 +8,5 @@
 ## 依赖
 
 ```
-allprojects {
-repositories {
-	maven { url 'https://jitpack.io' }
-	}
-}
+implementation 'tech.threekilogram:overscroll:2.0.0'
 ```
-```
-dependencies {
-	compile 'com.github.threekilogram:OverScrollLayout:2.0.0'
-}
-```
-
