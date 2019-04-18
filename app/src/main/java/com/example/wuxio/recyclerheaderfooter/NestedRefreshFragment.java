@@ -15,7 +15,7 @@ import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.ImageView;
 import android.widget.TextView;
-import com.threekilogram.drawable.BiliBiliLoadingDrawable;
+import com.example.wuxio.recyclerheaderfooter.drawable.BiliBiliDrawable;
 import tech.threekilogram.overscroll.NestedRefreshLayout;
 
 /**
@@ -108,9 +108,9 @@ public class NestedRefreshFragment extends Fragment {
 
       private class RefreshAdapter implements NestedRefreshLayout.RefreshAdapter {
 
-            private TextView                mTextView;
-            private ImageView               mImageView;
-            private BiliBiliLoadingDrawable mDrawable;
+            private TextView         mTextView;
+            private ImageView        mImageView;
+            private BiliBiliDrawable mDrawable;
 
             @Override
             public View getRefreshView ( Context context ) {
@@ -127,7 +127,7 @@ public class NestedRefreshFragment extends Fragment {
                   mTextView = itemView.findViewById( R.id.textView );
                   mImageView = itemView.findViewById( R.id.imageView );
 
-                  mDrawable = new BiliBiliLoadingDrawable( 90 );
+                  mDrawable = new BiliBiliDrawable();
                   mImageView.setImageDrawable( mDrawable );
             }
 
